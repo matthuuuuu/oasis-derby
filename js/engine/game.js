@@ -17,11 +17,16 @@
 //    { type: 'roll' }                       3. take a pyramid ticket and reveal a die
 //    { type: 'finishBet', pile, color }     4. overall winner/loser card ('winner' | 'loser')
 //    { type: 'partner', target }            5. betting partnership (6+ players only)
+//
+//  Modes (state.mode): 'classic' (the rulebook) or 'crazier' ("Crazier Camels"):
+//    • the grey die is NOT in the pyramid; it is rolled right after every coloured
+//      die, so a crazy camel moves on every pyramid roll;
+//    • a crazy camel passing space 1 loops round to 16 and keeps going; racing
+//      camels it was carrying are dropped off on space 1.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import {
   RACING_CAMELS,
-  DICE,
   DICE_PER_LEG,
   PYRAMID_TICKETS,
   TRACK_SPACES,
@@ -35,6 +40,7 @@ import {
   PARTNERSHIP_MIN_PLAYERS,
   isRacing,
   isCrazy,
+  pyramidDice,
 } from './constants.js';
 import { hashSeed, randomSeed, rand, rollDie, shuffle } from './rng.js';
 
@@ -52,8 +58,9 @@ export function freshLegStacks() {
  * players: [{ id, name, character, bot? }] in seating (clockwise) order.
  * seed: optional, makes the game reproducible.
  * startPlayer: optional index; otherwise the "youngest player" is picked at random.
+ * mode: 'classic' (default) or 'crazier'.
  */
-export function createGame({ players, seed, startPlayer } = {}) {
+export function createGame({ players, seed, startPlayer, mode } = {}) {
   if (!Array.isArray(players) || players.length < MIN_PLAYERS || players.length > MAX_PLAYERS) {
     throw new RuleError(`A race needs ${MIN_PLAYERS}–${MAX_PLAYERS} players.`);
   }
@@ -62,6 +69,7 @@ export function createGame({ players, seed, startPlayer } = {}) {
 
   const s = {
     v: 1,
+    mode: mode === 'crazier' ? 'crazier' : 'classic',
     status: 'playing',
     rng: hashSeed(seed ?? randomSeed()),
     seq: 0,
@@ -84,7 +92,7 @@ export function createGame({ players, seed, startPlayer } = {}) {
     tiles: {},
     legStacks: freshLegStacks(),
     pyramidLeft: PYRAMID_TICKETS,
-    diceLeft: [...DICE],
+    diceLeft: pyramidDice(mode),
     rolled: [],
     winnerBets: [],
     loserBets: [],
@@ -203,8 +211,13 @@ export function crazyCamelToMove(stacks, shown) {
 /**
  * Move `camel` and everything sitting on it `steps` spaces in its own direction
  * (racing camels clockwise = up the numbers, crazy camels counter-clockwise).
- * Applies spectator tiles. Works on a bare board { stacks, tiles } so the bots
- * can reuse it for fast simulations.
+ * Applies spectator tiles. Works on a bare board { stacks, tiles, mode } so the
+ * bots can reuse it for fast simulations.
+ *
+ * Crazier Camels (board.mode === 'crazier'): a crazy camel never leaves the board.
+ * Moving past space 1 it carries its riders to space 1, drops the racing camels
+ * off there (on top of whatever is already on 1), then loops round to 16, 15…
+ * with any crazy camels still riding on it.
  *
  * Returns { over, tile } — over: a camel unit crossed the finish line;
  * tile: the spectator tile that was triggered (its owner earns 1 coin).
@@ -214,11 +227,32 @@ export function moveOnBoard(board, camel, steps, emit) {
   const { stacks, tiles } = board;
   const dir = isCrazy(camel) ? -1 : 1;
   const from = locate(stacks, camel);
-  const unit = takeFrom(stacks, from.space, from.index);
-  const to = from.space + dir * steps;
-  putOnTop(stacks, to, unit);
-  if (emit) {
-    emit({ t: 'move', camel, unit: [...unit], from: from.space, to, dir, under: false, stacks: copyStacks(stacks) });
+  const crazier = board.mode === 'crazier';
+  let unit = takeFrom(stacks, from.space, from.index);
+  let to = from.space + dir * steps;
+  if (crazier && dir < 0 && to < 1) {
+    const left = 1 - to; // steps still to go once space 1 is reached
+    putOnTop(stacks, 1, unit);
+    if (emit && from.space > 1) {
+      emit({ t: 'move', camel, unit: [...unit], from: from.space, to: 1, dir, under: false, stacks: copyStacks(stacks) });
+    }
+    const base = stacks[1].length - unit.length;
+    const dropped = unit.filter(isRacing);
+    const riders = unit.filter(isCrazy);
+    stacks[1] = stacks[1].filter((c, i) => i < base || isRacing(c));
+    if (!stacks[1].length) delete stacks[1];
+    to = TRACK_SPACES + 1 - left; // 1 → 16 → 15 …
+    putOnTop(stacks, to, riders);
+    if (emit) {
+      const path = Array.from({ length: left }, (_, k) => TRACK_SPACES - k);
+      emit({ t: 'loop', camel, unit: [...riders], dropped, from: 1, to, path, dir, under: false, stacks: copyStacks(stacks) });
+    }
+    unit = riders;
+  } else {
+    putOnTop(stacks, to, unit);
+    if (emit) {
+      emit({ t: 'move', camel, unit: [...unit], from: from.space, to, dir, under: false, stacks: copyStacks(stacks) });
+    }
   }
   // "As soon as any camel unit crosses the finish line, the race ends immediately."
   if (isOffTrack(to)) return { over: true, tile: null };
@@ -230,7 +264,10 @@ export function moveOnBoard(board, camel, steps, emit) {
   // (landing on top); booing pushes it 1 space back (sliding underneath).
   const moved = takeFrom(stacks, to, stacks[to].length - unit.length);
   const cheer = tile.side === 'cheer';
-  const to2 = cheer ? to + dir : to - dir;
+  let to2 = cheer ? to + dir : to - dir;
+  // Crazier Camels: crazy camels booed forward off space 16 come round to space 1
+  const wrap = crazier && to2 > TRACK_SPACES && moved.every(isCrazy);
+  if (wrap) to2 = 1;
   if (cheer) putOnTop(stacks, to2, moved);
   else putUnder(stacks, to2, moved);
   if (emit) {
@@ -245,6 +282,7 @@ export function moveOnBoard(board, camel, steps, emit) {
       to: to2,
       dir: cheer ? dir : -dir,
       under: !cheer,
+      ...(wrap ? { path: [1] } : {}),
       stacks: copyStacks(stacks),
     });
   }
@@ -335,7 +373,7 @@ export function legalActions(s, playerId) {
 /**
  * Apply one action for `playerId`. Returns a NEW state plus a list of events
  * (for animations and the game log). Throws RuleError if the action is illegal.
- * `options.roll` ({ die, value, shown }) forces a die result — tests only.
+ * `options.roll` ({ die, value, shown, crazy?: { value, shown } }) forces a die result — tests only.
  */
 export function applyAction(state, playerId, action, options = {}) {
   const problem = validateAction(state, playerId, action);
@@ -395,7 +433,11 @@ export function applyAction(state, playerId, action, options = {}) {
   return { state: s, events };
 }
 
-/** Action 3: take a pyramid ticket, reveal a random die, move a camel. */
+/**
+ * Action 3: take a pyramid ticket, reveal a random die, move a camel.
+ * Crazier Camels: then roll the grey die beside the pyramid and move a crazy camel too
+ * (unless the coloured camel already ended the race).
+ */
 function rollPyramid(s, p, emit, forced) {
   s.pyramidLeft -= 1;
   p.pyramidTickets += 1;
@@ -423,7 +465,17 @@ function rollPyramid(s, p, emit, forced) {
 
   const { over, tile } = moveOnBoard(s, camel, value, emit);
   if (tile) playerById(s, tile.owner).coins += 1; // tile owner gets 1 coin from the bank
-  return over;
+  if (over || s.mode !== 'crazier') return over;
+
+  // the grey die, rolled off to the side
+  const greyValue = forced?.crazy ? forced.crazy.value : rollDie(s);
+  const greyShown = forced?.crazy ? forced.crazy.shown : rand(s) < 0.5 ? 'white' : 'black';
+  const pickCrazy = crazyCamelToMove(s.stacks, greyShown);
+  s.rolled[s.rolled.length - 1].crazy = { value: greyValue, shown: greyShown, camel: pickCrazy.camel };
+  emit({ t: 'roll', side: true, player: p.id, die: 'grey', value: greyValue, shown: greyShown, camel: pickCrazy.camel, reason: pickCrazy.reason });
+  const second = moveOnBoard(s, pickCrazy.camel, greyValue, emit);
+  if (second.tile) playerById(s, second.tile.owner).coins += 1;
+  return second.over;
 }
 
 /** Reward of one betting ticket once we know the leg's 1st and 2nd camels. */
@@ -479,7 +531,7 @@ function startNextLeg(s, lastRollerIndex, emit) {
     p.partner = null; // partnership cards flip back to "available"
   }
   s.tiles = {}; // spectator tiles go back to their owners
-  s.diceLeft = [...DICE];
+  s.diceLeft = pyramidDice(s.mode);
   s.rolled = [];
   s.pyramidLeft = PYRAMID_TICKETS;
   s.leg += 1;

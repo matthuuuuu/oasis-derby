@@ -16,9 +16,9 @@ import { createGame, applyAction, viewFor, eventsFor, validateAction, RuleError 
 import { MAX_PLAYERS, MIN_PLAYERS } from '../engine/constants.js';
 import { CHARACTERS } from '../art/characters.js';
 import { SessionBase, BotDriver } from './session.js';
-import { saveJSON } from '../ui/prefs.js';
+import { saveJSON, getPrefs, setPrefs } from '../ui/prefs.js';
 
-const PREFIX = 'oasis-derby-v1-';
+const PREFIX = 'oasis-derby-crazier-v1-'; // separate from the classic game's rooms
 const PROTOCOL = 1;
 const CODE_ALPHABET = 'BCDFGHJKLMNPQRSTVWXZ';
 export const HOST_SAVE_KEY = 'oasis-derby:host';
@@ -100,6 +100,7 @@ export class HostSession extends SessionBase {
     this.takeover = new Set(resume?.takeover || []);
     this.conns = new Map(); // DataConnection -> { seatId, lastSeen }
     this.seatSeq = resume?.seatSeq || 1;
+    this.mode = resume?.mode || getPrefs().mode || 'crazier';
     this.myIds = this.seats.some((s) => s.id === 'h') ? ['h'] : [];
     this.bots = new BotDriver(this, (p) => this.botLevel(p.id));
     this.wake = new WakeLock();
@@ -291,6 +292,7 @@ export class HostSession extends SessionBase {
     return {
       code: this.code,
       started: !!this.state,
+      mode: this.mode,
       seats: this.seats.map((s) => ({
         id: s.id,
         name: s.name,
@@ -386,6 +388,12 @@ export class HostSession extends SessionBase {
     }
     this.broadcastLobby();
   }
+  setMode(mode) {
+    if (this.state) return;
+    this.mode = mode;
+    setPrefs({ mode });
+    this.broadcastLobby();
+  }
   setTakeover(seatId, on) {
     if (on) this.takeover.add(seatId);
     else this.takeover.delete(seatId);
@@ -396,6 +404,7 @@ export class HostSession extends SessionBase {
     if (this.seats.length < MIN_PLAYERS) throw new Error(`You need at least ${MIN_PLAYERS} riders.`);
     this.state = createGame({
       players: this.seats.map((s) => ({ id: s.id, name: s.name, character: s.character, bot: s.bot || null })),
+      mode: this.mode,
     });
     this.broadcastGame([], true);
     this.persist();
@@ -431,6 +440,7 @@ export class HostSession extends SessionBase {
       state: this.state,
       takeover: [...this.takeover],
       seatSeq: this.seatSeq,
+      mode: this.mode,
       savedAt: Date.now(),
     });
   }

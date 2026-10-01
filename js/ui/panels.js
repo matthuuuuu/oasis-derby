@@ -287,6 +287,7 @@ export function describe(e, s, secretOk = () => false) {
     case 'roll':
       if (e.die === 'grey') {
         const why = e.reason === 'carrying' ? ' (it carries racers, so it must go)' : e.reason === 'stacked' ? ' (it sits right on the other one)' : '';
+        if (e.side) return html`…then the grey die beside the pyramid: <b>${e.value}</b> ${e.shown} → ${cam(e.camel)} runs backwards${why}.`;
         return html`${n(e.player)} rolled the grey die: <b>${e.value}</b> ${e.shown} → ${cam(e.camel)} runs backwards${why}.`;
       }
       return html`${n(e.player)} rolled ${cam(e.die)} <b>${e.value}</b>.`;
@@ -294,6 +295,13 @@ export function describe(e, s, secretOk = () => false) {
       const riders = e.unit.slice(1);
       if (e.to > 16 || e.to < 1) return html`${cam(e.camel)} crossed the finish line!`;
       return html`${cam(e.camel)} ${e.dir > 0 ? 'hops' : 'staggers back'} to space <b>${e.to}</b>${riders.length ? html` carrying ${riders.map((c, i) => html`${i ? ', ' : ''}${cam(c)}`)}` : ''}.`;
+    }
+    case 'loop': {
+      const list = (cs) => cs.map((c, i) => html`${i ? ', ' : ''}${cam(c)}`);
+      const riders = e.unit.slice(1);
+      return html`${cam(e.camel)} loops past the start round to space <b>${e.to}</b>${riders.length ? html` carrying ${list(riders)}` : ''}${
+        e.dropped.length ? html` — ${list(e.dropped)} hopped off on space <b>1</b>` : ''
+      }.`;
     }
     case 'tileEffect':
       return html`${n(e.owner)}'s crowd ${e.side === 'cheer' ? 'cheered' : 'booed'} ${cam(e.camel)} to space ${e.to}! <span class="plus">+1</span> for ${n(e.owner)}.`;

@@ -16,6 +16,23 @@ school project that follows the rules of the board game **Camel Up (2nd edition)
 
 ---
 
+## 🐪 Crazier Camels (this branch)
+
+This copy of the game adds a second game mode, picked on the "Set up the race" screen
+(and by the host in an online room). Everything is the classic race except:
+
+- The **grey die is not in the pyramid**. It sits on a stone stand beside it and is rolled
+  **right after every coloured die**, so a crazy camel moves on every pyramid roll.
+  A leg still ends after 5 rolls, so all five coloured dice come out each leg.
+- **Crazy camels loop**: passing space 1 they come round to 16 and keep going. Racing camels
+  they were carrying that far hop off on space 1. (In the classic game a crazy camel going
+  past space 1 crosses the finish line and ends the race.)
+- If the coloured camel's move ends the race, the grey die isn't rolled.
+
+It runs on its own address so its saves don't mix with the main game:
+`node tools/dev-server.mjs` → http://localhost:5318 (online rooms use their own namespace too).
+The rules live in `js/engine/game.js` (`moveOnBoard`, `rollPyramid`); tests in `tests/crazier.test.mjs`.
+
 ## ▶️ Play it on your computer
 
 You need [Node.js](https://nodejs.org) (already installed on this computer).

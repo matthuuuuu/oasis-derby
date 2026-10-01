@@ -1420,6 +1420,69 @@ p {
     0 0 0 clamp(1px, 3cqw, 2px) #3b2412;
 }
 
+/* Crazier Camels: the grey die waits on its stone stand beside the pyramid */
+.crazy-stand {
+  position: absolute;
+  left: 71%;
+  top: 27%;
+  width: 17.5%;
+  aspect-ratio: 60 / 52;
+  z-index: 2;
+  container-type: inline-size;
+}
+.crazy-stand > .stand {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  aspect-ratio: 60 / 36;
+}
+.crazy-stand > .stand > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.crazy-stand .die {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  width: 54%;
+  transform: translateX(-50%);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.22),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    0 0 0 clamp(1px, 3cqw, 2px) #3b2412;
+}
+.crazy-stand .die.resting > span::before {
+  content: '?';
+  color: rgba(255, 255, 255, 0.75);
+}
+.crazy-stand.shaking .die {
+  animation: shake 0.5s ease-in-out;
+}
+/* a small loop sign by the finish line: crazy camels go from space 1 straight back round to 16 */
+.loop-mark {
+  position: absolute;
+  left: 86.8%;
+  top: 76.8%;
+  width: 6.4%;
+  aspect-ratio: 1;
+  z-index: 3;
+  border-radius: 50%;
+  background: var(--card, #fff8e6);
+  box-shadow: 0 0 0 2px #3b2412, 0 2px 0 3px rgba(59, 36, 18, 0.25);
+  padding: 0.4%;
+  pointer-events: auto;
+}
+.loop-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.float-fx.loop {
+  background: #2e2828;
+}
+
 /* dice */
 .die {
   aspect-ratio: 1;
@@ -2988,4 +3051,79 @@ button.pile:active:not(:disabled) {
     max-width: none;
     padding-top: 12px;
   }
+}
+
+/* Crazier Camels badge in the top bar */
+.leg-pill.mode-pill {
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--heading);
+}
+.mode-ico {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+}
+.mode-ico svg {
+  width: 100%;
+  height: 100%;
+}
+@media (max-width: 420px) {
+  .topbar .leg-pill.mode-pill {
+    font-size: 0; /* just the loop icon on small phones */
+    padding: 6px 8px;
+  }
+}
+
+/* game mode cards on the setup screens (Classic / Crazier Camels) */
+.game-modes.readonly {
+  grid-template-columns: 1fr;
+}
+.game-mode .mode-art {
+  position: relative;
+  display: block;
+  height: 58px;
+  margin-bottom: 6px;
+}
+.game-mode .mode-art .pyr,
+.game-mode .mode-art .loop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 58px;
+  aspect-ratio: 120 / 100;
+}
+.game-mode .mode-art .loop {
+  aspect-ratio: 1;
+}
+.game-mode .mode-art svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* the two crazy camels charging out of the loop, the wrong way round */
+.game-mode .mode-art .rider {
+  position: absolute;
+  bottom: -2px;
+  width: 40px;
+  transform: scaleX(-1);
+}
+.game-mode .mode-art .rider.white {
+  left: 36px;
+}
+.game-mode .mode-art .rider.black {
+  left: 64px;
+}
+.game-mode .mode-art .rider svg {
+  width: 100%;
+  height: auto;
+}
+/* the grey die on its stand, as pictured in "How to play" */
+.crazy-stand.howto-stand {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: 78px;
 }

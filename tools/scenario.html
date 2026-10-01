@@ -11,12 +11,14 @@
 <div id="app"></div>
 <script type="module">
   // Development "storybook": renders real screens with hand-made game states.
-  //   ?case=game | game8 | stacks | leg | finale | finish | howto | tiles   &theme=sand|sunset|night
+  //   &mode=classic for the rulebook game (Crazier Camels otherwise)
+  //   ?case=game | game8 | stacks | leg | finale | finish | howto[&page=N] | setup | loop | tiles   &theme=sand|sunset|night
   import { html, render } from '../vendor/preact-htm.js';
   import { createGame, applyAction } from '../js/engine/game.js';
   import { GameScreen } from '../js/ui/game.js';
   import { LegResultsSheet, FinaleSheet, FinishBetSheet, MenuSheet } from '../js/ui/modals.js';
   import { HowToSheet } from '../js/ui/howto.js';
+  import { LocalSetup } from '../js/ui/setup.js';
   import { sceneSVG } from '../js/art/scenery.js';
   import { setPrefs } from '../js/ui/prefs.js';
   import { SpectatorTile } from '../js/ui/common.js';
@@ -46,6 +48,15 @@
     s.rolled = [{ die: 'blue', value: 2 }, { die: 'grey', value: 1, shown: 'black' }];
     s.diceLeft = ['yellow', 'green', 'red', 'purple'];
     s.pyramidLeft = 3;
+    if (q.get('mode') !== 'classic') {
+      // Crazier Camels (the default in this copy): every roll also rolled the grey die beside the pyramid
+      s.mode = 'crazier';
+      s.rolled = [
+        { die: 'blue', value: 2, shown: null, crazy: { value: 1, shown: 'black', camel: 'black' } },
+        { die: 'green', value: 1, shown: null, crazy: { value: 3, shown: 'white', camel: 'white' } },
+      ];
+      s.diceLeft = ['yellow', 'red', 'purple'];
+    }
     s.winnerBets = [{ player: 'p2', color: 'red' }];
     s.loserBets = [{ player: 'p1', color: 'purple' }, { player: 'p0', color: 'green' }];
     s.players[2].finishCards = ['blue', 'yellow', 'green', 'purple'];
@@ -108,6 +119,18 @@
     const session = { ...fake(s), subscribe: (fn) => (setTimeout(() => fn({ events, state: next }), at), () => {}) };
     render(html`<${GameScreen} session=${session} onExit=${() => {}} />`, root);
   }
+  if (c === 'loop') {
+    // Crazier Camels: Ruby (a bot) rolls purple 1, then the grey die shows white 3 — White, carrying Red,
+    // runs 2 → 1, drops Red off on space 1 and loops round to 15.   &at=ms (when the roll arrives)
+    const s = midGame(4);
+    s.turn = 1;
+    s.stacks = { 1: ['yellow'], 2: ['white', 'red'], 5: ['blue', 'purple'], 6: ['green'], 11: ['black'] };
+    s.tiles = {};
+    const { state: next, events } = applyAction(s, 'p1', { type: 'roll' }, { roll: { die: 'purple', value: 1, crazy: { value: 3, shown: 'white' } } });
+    const at = Number(q.get('at') || 500);
+    const session = { ...fake(s), subscribe: (fn) => (setTimeout(() => fn({ events, state: next }), at), () => {}) };
+    render(html`<${GameScreen} session=${session} onExit=${() => {}} />`, root);
+  }
   if (c === 'huts') {
     // four dice already rolled this leg (one hut still empty)
     const s = midGame(3);
@@ -156,7 +179,8 @@
     const s = midGame(4);
     render(html`<${FinishBetSheet} state=${s} me=${s.players[0]} needsGate=${q.has('gate')} onConfirm=${() => {}} onClose=${() => {}} />`, root);
   }
-  if (c === 'howto') render(html`<${HowToSheet} onClose=${() => {}} />`, root);
+  if (c === 'howto') render(html`<${HowToSheet} onClose=${() => {}} startPage=${Number(q.get('page') || 1) - 1} />`, root);
+  if (c === 'setup') render(html`<${LocalSetup} profile=${{ name: 'Sam', character: 'merchant' }} onBack=${() => {}} onStart=${() => {}} onHowTo=${() => {}} />`, root);
   if (c === 'tiles') {
     // every character's spectator tile, both sides, at board size and big
     render(html`<div style="padding:12px;display:grid;gap:10px;background:var(--bg,#f6e7c1)">${[46, 130].map((w) => html`<div style="display:flex;flex-wrap:wrap;gap:8px">${CHARACTERS.flatMap((ch) => ['cheer', 'boo'].map((side) => html`<div style=${`width:${w}px`}><${SpectatorTile} side=${side} character=${ch.id} /></div>`))}</div>`)}</div>`, root);

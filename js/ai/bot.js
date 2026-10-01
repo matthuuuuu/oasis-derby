@@ -9,7 +9,7 @@
 //  The same simulations power the optional "fortune teller" odds in the UI.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { RACING_CAMELS, DICE, DICE_PER_LEG, FINISH_PAYOUTS, FINISH_PAYOUT_LATE, isCrazy } from '../engine/constants.js';
+import { RACING_CAMELS, DICE_PER_LEG, FINISH_PAYOUTS, FINISH_PAYOUT_LATE, TRACK_SPACES, isCrazy, pyramidDice } from '../engine/constants.js';
 import { moveOnBoard, crazyCamelToMove, rankStacks, validTileSpaces, locate, tileSpaceOf } from '../engine/game.js';
 
 const zeroes = () => Object.fromEntries(RACING_CAMELS.map((c) => [c, 0]));
@@ -20,18 +20,29 @@ function copyStacks(stacks) {
   return out;
 }
 
-/** Roll one random die from `dice` (mutates it) and move a camel on `board`. */
+/** Move `camel` `value` spaces on `board`, counting where it lands. Returns true if the race ended. */
+function hop(board, camel, value, landings) {
+  if (landings) {
+    const from = locate(board.stacks, camel).space;
+    let to = from + (isCrazy(camel) ? -value : value);
+    if (board.mode === 'crazier' && to < 1) to += TRACK_SPACES; // crazy camels loop 1 → 16
+    if (to >= 1 && to <= TRACK_SPACES) landings[to] += 1;
+  }
+  return moveOnBoard(board, camel, value).over;
+}
+const randomCrazy = (board) => crazyCamelToMove(board.stacks, Math.random() < 0.5 ? 'white' : 'black').camel;
+
+/**
+ * Roll one random die from `dice` (mutates it) and move a camel on `board`.
+ * Crazier Camels: the grey die is then rolled beside the pyramid and a crazy camel moves too.
+ */
 function randomRoll(board, dice, landings) {
   const die = dice.splice(Math.floor(Math.random() * dice.length), 1)[0];
   const value = 1 + Math.floor(Math.random() * 3);
-  let camel = die;
-  if (die === 'grey') camel = crazyCamelToMove(board.stacks, Math.random() < 0.5 ? 'white' : 'black').camel;
-  if (landings) {
-    const from = locate(board.stacks, camel).space;
-    const to = from + (isCrazy(camel) ? -value : value);
-    if (to >= 1 && to <= 16) landings[to] += 1;
-  }
-  return moveOnBoard(board, camel, value).over;
+  const camel = die === 'grey' ? randomCrazy(board) : die;
+  if (hop(board, camel, value, landings)) return true;
+  if (board.mode !== 'crazier') return false;
+  return hop(board, randomCrazy(board), 1 + Math.floor(Math.random() * 3), landings);
 }
 
 /**
@@ -47,7 +58,7 @@ export function simulateLeg(s, n = 1500) {
   let ended = 0;
   const rollsLeft = DICE_PER_LEG - s.rolled.length;
   for (let i = 0; i < n; i++) {
-    const board = { stacks: copyStacks(s.stacks), tiles: s.tiles };
+    const board = { stacks: copyStacks(s.stacks), tiles: s.tiles, mode: s.mode };
     const dice = s.diceLeft.slice();
     for (let r = 0; r < rollsLeft; r++) {
       if (randomRoll(board, dice, landings)) {
@@ -72,7 +83,7 @@ export function simulateRace(s, n = 600) {
   const lose = zeroes();
   let legsSum = 0;
   for (let i = 0; i < n; i++) {
-    const board = { stacks: copyStacks(s.stacks), tiles: s.tiles };
+    const board = { stacks: copyStacks(s.stacks), tiles: s.tiles, mode: s.mode };
     let dice = s.diceLeft.slice();
     let rollsLeft = DICE_PER_LEG - s.rolled.length;
     let over = false;
@@ -85,7 +96,7 @@ export function simulateRace(s, n = 600) {
       }
       if (!over) {
         // next leg: all dice back in the pyramid, spectator tiles back to owners
-        dice = DICE.slice();
+        dice = pyramidDice(s.mode);
         rollsLeft = DICE_PER_LEG;
         board.tiles = {};
         legsSum++;

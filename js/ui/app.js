@@ -123,8 +123,8 @@ export function App() {
       profile=${profile}
       onBack=${() => setScreen('home')}
       onHowTo=${() => setHowto(true)}
-      onStart=${(seats) => {
-        setSession(new LocalSession({ seats }));
+      onStart=${(seats, mode) => {
+        setSession(new LocalSession({ seats, mode }));
         setScreen('game');
       }}
     />`;

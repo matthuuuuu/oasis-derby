@@ -6,7 +6,10 @@ import { Board, viewFromState } from './board.js';
 import { TurnBanner, TicketBar, ActionBox, PlayerList, OddsBox, LogBox, diceLeftIndicator, nameOf } from './panels.js';
 import { LegResultsSheet, FinaleSheet, FinishBetSheet, PartnerSheet, MenuSheet, ConfirmSheet, EndedSheet } from './modals.js';
 import { HowToSheet } from './howto.js';
-import { Icon, toast, camelName } from './common.js';
+import { Icon, Raw, toast, camelName } from './common.js';
+import { loopArrowSVG } from '../art/tokens.js';
+
+const LOOP_ICON = loopArrowSVG();
 import { sfx, buzz } from './fx.js';
 import { getPrefs, setPrefs, onPrefs } from './prefs.js';
 
@@ -89,14 +92,30 @@ export function GameScreen({ session, onExit, onLobby }) {
       switch (e.t) {
         case 'roll': {
           sfx.shake();
-          board.current?.shake();
-          await wait(fast ? 260 : 480);
-          setView((v) => ({ ...v, rolled: [...v.rolled, { die: e.die, value: e.value, shown: e.shown, popping: true }] }));
+          if (e.side) {
+            // Crazier Camels: the grey die is rolled on its stand beside the pyramid
+            board.current?.shakeSide();
+            await wait(fast ? 220 : 420);
+            setView((v) => ({ ...v, crazy: { value: e.value, shown: e.shown, popping: true } }));
+          } else {
+            board.current?.shake();
+            await wait(fast ? 260 : 480);
+            setView((v) => ({ ...v, rolled: [...v.rolled, { die: e.die, value: e.value, shown: e.shown, popping: true }] }));
+          }
           sfx.pop();
           await wait(fast ? 320 : 620);
           break;
         }
         case 'move':
+          await board.current?.animateMove(e);
+          setView((v) => ({ ...v, stacks: e.stacks }));
+          break;
+        case 'loop':
+          // a crazy camel runs past space 1 and round to 16; racing riders hop off on space 1
+          if (e.dropped.length) {
+            board.current?.float(1, 'hop off!', 'loop');
+            sfx.boo();
+          }
           await board.current?.animateMove(e);
           setView((v) => ({ ...v, stacks: e.stacks }));
           break;
@@ -314,6 +333,8 @@ export function GameScreen({ session, onExit, onLobby }) {
     <div class="topbar">
       <button class="icon-btn" aria-label="Menu" onClick=${() => setModal({ type: 'menu' })}><${Icon} name="menu" /></button>
       <div class="leg-pill"><b>Leg ${shown.leg}</b>${diceLeftIndicator(shown)}</div>
+      ${shown.mode === 'crazier' &&
+      html`<div class="leg-pill mode-pill" title="Crazier Camels: a crazy camel moves on every roll and they loop round the board"><${Raw} svg=${LOOP_ICON} class="mode-ico" /> Crazier</div>`}
       ${session.lobby?.code && html`<div class="leg-pill" title="Room code">Room <b>${session.lobby.code}</b></div>`}
       <span class="spacer"></span>
       ${session.status?.level && session.status.level !== 'ok' &&

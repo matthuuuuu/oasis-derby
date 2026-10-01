@@ -11,6 +11,7 @@ const defaults = {
   sound: true,
   odds: false,
   fast: false,
+  mode: 'crazier',
   clientId: '',
 };
 

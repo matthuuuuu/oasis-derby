@@ -2,10 +2,44 @@
 // online room (with a room code, share link and QR code).
 import { html, useEffect, useMemo, useState } from '../../vendor/preact-htm.js';
 import qrcode from '../../vendor/qrcode.mjs';
-import { MAX_PLAYERS, MIN_PLAYERS, PARTNERSHIP_MIN_PLAYERS } from '../engine/constants.js';
-import { Icon, Avatar, CharacterPicker, Sheet, toast, copyText, CHARACTERS, characterById } from './common.js';
+import { MAX_PLAYERS, MIN_PLAYERS, PARTNERSHIP_MIN_PLAYERS, MODE_LABELS } from '../engine/constants.js';
+import { Icon, Avatar, CharacterPicker, Sheet, Raw, CamelSprite, toast, copyText, CHARACTERS, characterById } from './common.js';
+import { pyramidSVG, loopArrowSVG } from '../art/tokens.js';
 import { getPrefs, setPrefs } from './prefs.js';
 import { sfx } from './fx.js';
+
+// ─── Game mode ───────────────────────────────────────────────────────────────
+
+const MODE_ART = { classic: pyramidSVG(), crazier: loopArrowSVG() };
+const MODE_BLURB = {
+  classic: 'The rulebook race. The grey die hides in the pyramid with the others.',
+  crazier: 'The grey die sits by the pyramid: a crazy camel moves on every roll, and they loop round the board.',
+};
+
+/** Classic or Crazier Camels. Without onChange it just shows the choice (online guests). */
+function ModePicker({ value, onChange }) {
+  const modes = onChange ? ['classic', 'crazier'] : [value];
+  return html`<div class=${`mode-grid game-modes ${onChange ? '' : 'readonly'}`} aria-label="Game mode">
+    ${modes.map((m) => {
+      const Tag = onChange ? 'button' : 'div';
+      return html`<${Tag}
+        class=${`mode-card game-mode ${m}`}
+        aria-pressed=${onChange ? value === m : undefined}
+        onClick=${onChange ? () => (sfx.tap(), onChange(m)) : undefined}
+      >
+        <span class="mode-art" aria-hidden="true">
+          ${m === 'crazier'
+            ? html`<${Raw} svg=${MODE_ART.crazier} class="loop" />
+                <span class="rider white"><${CamelSprite} camel="white" /></span>
+                <span class="rider black"><${CamelSprite} camel="black" /></span>`
+            : html`<${Raw} svg=${MODE_ART.classic} class="pyr" />`}
+        </span>
+        <h3>${MODE_LABELS[m]}</h3>
+        <p>${MODE_BLURB[m]}</p>
+      </${Tag}>`;
+    })}
+  </div>`;
+}
 
 function freeCharacter(seats, wanted) {
   const taken = new Set(seats.map((s) => s.character));
@@ -70,6 +104,11 @@ export function LocalSetup({ profile, onBack, onStart, onHowTo }) {
     return out;
   });
   const [sheet, setSheet] = useState(null);
+  const [mode, setModeState] = useState(() => getPrefs().mode || 'crazier');
+  const setMode = (m) => {
+    setModeState(m);
+    setPrefs({ mode: m });
+  };
 
   const taken = (except) => seats.filter((s) => s.id !== except).map((s) => s.character);
   const full = seats.length >= MAX_PLAYERS;
@@ -92,6 +131,10 @@ export function LocalSetup({ profile, onBack, onStart, onHowTo }) {
 
   return html`<main class="page">
     <${Header} title="Set up the race" onBack=${onBack} />
+    <section class="card">
+      <h2 class="section-title" style="margin:0 0 10px">Game mode</h2>
+      <${ModePicker} value=${mode} onChange=${setMode} />
+    </section>
     <section class="card">
       <div class="row" style="margin-bottom:12px">
         <h2 class="section-title grow" style="margin:0">Riders <span class="muted" style="font-family:var(--font);font-size:15px">${seats.length}/${MAX_PLAYERS}</span></h2>
@@ -119,7 +162,7 @@ export function LocalSetup({ profile, onBack, onStart, onHowTo }) {
         ${seats.length >= PARTNERSHIP_MIN_PLAYERS ? ' With 6+ riders, betting partnerships are in play.' : ''}
       </p>
     </section>
-    <button class="btn block" disabled=${seats.length < MIN_PLAYERS} onClick=${() => onStart(seats)}>
+    <button class="btn block" disabled=${seats.length < MIN_PLAYERS} onClick=${() => onStart(seats, mode)}>
       Start the race! <${Icon} name="flag" />
     </button>
     <button class="btn ghost block" onClick=${onHowTo}><${Icon} name="book" /> How to play</button>
@@ -248,6 +291,11 @@ export function Lobby({ session, onLeave, onHowTo }) {
         <button class="switch" role="switch" aria-checked=${hostPlaying} aria-label="Host is playing" onClick=${() => session.setHostPlaying(!hostPlaying, getPrefs())}></button>
       </div>`}
       ${seats.length >= PARTNERSHIP_MIN_PLAYERS && html`<p class="muted" style="font-size:13px;font-weight:700;margin-top:8px">6+ riders: betting partnerships are in play.</p>`}
+    </section>
+
+    <section class="card">
+      <h2 class="section-title" style="margin:0 0 10px">Game mode</h2>
+      <${ModePicker} value=${lobby.mode || 'crazier'} onChange=${isHost ? (m) => session.setMode(m) : null} />
     </section>
 
     ${isHost

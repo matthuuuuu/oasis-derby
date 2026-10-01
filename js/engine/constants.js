@@ -7,8 +7,20 @@ export const ALL_CAMELS = [...RACING_CAMELS, ...CRAZY_CAMELS];
 
 /** The pyramid holds one die per racing camel plus the grey "crazy" die. */
 export const DICE = [...RACING_CAMELS, 'grey'];
-/** A leg ends when 5 of the 6 dice have been revealed. */
+/** A leg ends when 5 dice have been revealed (5 of 6 classic; all 5 coloured ones in Crazier Camels). */
 export const DICE_PER_LEG = 5;
+
+/**
+ * Game modes.
+ *  classic  — the rulebook game.
+ *  crazier  — "Crazier Camels": the grey die sits beside the pyramid and is rolled after
+ *             every coloured die, so a crazy camel moves on every pyramid roll; crazy camels
+ *             loop from space 1 round to 16 (dropping any racing camels they carry on space 1).
+ */
+export const MODES = ['classic', 'crazier'];
+export const MODE_LABELS = { classic: 'Classic', crazier: 'Crazier Camels' };
+/** The dice that start each leg inside the pyramid. */
+export const pyramidDice = (mode) => (mode === 'crazier' ? [...RACING_CAMELS] : [...DICE]);
 export const PYRAMID_TICKETS = 5;
 
 /** Race track spaces are numbered 1..16. The finish line sits after 16. */

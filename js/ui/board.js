@@ -5,7 +5,7 @@ import { ALL_CAMELS, isCrazy, CAMEL_LABELS } from '../engine/constants.js';
 import { rankStacks } from '../engine/game.js';
 import { camelSVG } from '../art/camels.js';
 import { oasisSVG } from '../art/scenery.js';
-import { pyramidSVG, hutSVG, hutFrontSVG, icon } from '../art/tokens.js';
+import { pyramidSVG, hutSVG, hutFrontSVG, crazyStandSVG, loopArrowSVG, icon } from '../art/tokens.js';
 import { Raw, Die, SpectatorTile } from './common.js';
 import { sfx } from './fx.js';
 import { getPrefs } from './prefs.js';
@@ -113,13 +113,14 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
  * Board props:
- *  view       { stacks, rolled, tiles } — what to draw right now
+ *  view       { stacks, rolled, tiles, mode, crazy } — what to draw right now
+ *             (crazy: the grey die's latest roll beside the pyramid, Crazier Camels only)
  *  players    list of players (for tile portraits)
  *  pickSpaces spaces that can be tapped (spectator tile placement), or null
  *  picked     currently chosen space
  *  onPick(space)
  *  canRoll, onRoll  — the pyramid is a big "roll" button on your turn
- *  controller ref: filled with { animateMove, shake, flashTile, float }
+ *  controller ref: filled with { animateMove, shake, shakeSide, flashTile, float }
  */
 export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRoll, rollPick = null, controller, theme }) {
   const boardRef = useRef();
@@ -131,11 +132,14 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
   const [floats, setFloats] = useState([]);
   const [flash, setFlash] = useState(null);
   const [shaking, setShaking] = useState(false);
+  const [sideShaking, setSideShaking] = useState(false);
 
   const oasis = useMemo(() => oasisSVG(theme), [theme]);
   const pyramid = useMemo(() => pyramidSVG(), []);
   const hutBack = useMemo(() => hutSVG(), []);
   const hutFront = useMemo(() => hutFrontSVG(), []);
+  const stand = useMemo(() => crazyStandSVG(), []);
+  const loopArrow = useMemo(() => loopArrowSVG(), []);
   const sprites = useMemo(
     () =>
       Object.fromEntries(
@@ -195,8 +199,9 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
       const fast = getPrefs().fast;
       const hopMs = fast ? 150 : 250;
       const before = stacksRef.current;
-      const steps = Math.abs(e.to - e.from);
-      const path = Array.from({ length: steps }, (_, k) => e.from + e.dir * (k + 1));
+      // usually straight along the numbers; a crazy camel looping 1 → 16 brings its own path
+      const path = e.path || Array.from({ length: Math.abs(e.to - e.from) }, (_, k) => e.from + e.dir * (k + 1));
+      const steps = path.length;
       // stacks with the moving unit lifted out
       const base = {};
       for (const key in before) {
@@ -255,6 +260,10 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
       setShaking(true);
       setTimeout(() => setShaking(false), 520);
     },
+    shakeSide() {
+      setSideShaking(true);
+      setTimeout(() => setSideShaking(false), 520);
+    },
     flashTile(space) {
       setFlash(space);
       setTimeout(() => setFlash((f) => (f === space ? null : f)), 650);
@@ -299,6 +308,10 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
       })}
 
       <div class="finish-line" style="left:80.2%;top:78.7%;width:19.6%" title="Finish line"></div>
+      ${view.mode === 'crazier' &&
+      html`<div class="loop-mark" title="Crazier Camels: crazy camels loop from space 1 back round to 16">
+        <${Raw} svg=${loopArrow} />
+      </div>`}
 
       <div class="board-center">
         <${Raw} svg=${oasis} class="oasis" tag="div" />
@@ -311,6 +324,13 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
         >
           <${Raw} svg=${pyramid} />
         </button>
+        ${view.mode === 'crazier' &&
+        html`<div class=${`crazy-stand ${sideShaking ? 'shaking' : ''}`} title="The grey die: rolled after every coloured die">
+          <${Raw} svg=${stand} class="stand" tag="div" />
+          ${view.crazy
+            ? html`<${Die} key=${`grey-${view.rolled.length}`} die="grey" value=${view.crazy.value} shown=${view.crazy.shown} popping=${view.crazy.popping} />`
+            : html`<div class="die c-grey resting" aria-label="grey die, not rolled yet this leg"><span></span></div>`}
+        </div>`}
         <div class="huts">
           ${[0, 1, 2, 3, 4].map((i) => {
             const d = view.rolled[i];
@@ -352,7 +372,7 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
 }
 
 export function viewFromState(s) {
-  return { stacks: s.stacks, rolled: s.rolled, tiles: s.tiles };
+  return { stacks: s.stacks, rolled: s.rolled, tiles: s.tiles, mode: s.mode || 'classic', crazy: s.rolled.at(-1)?.crazy || null };
 }
 
 export const ARROW_ICON = icon('arrowRight', 14);

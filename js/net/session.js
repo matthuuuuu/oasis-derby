@@ -93,7 +93,7 @@ export class BotDriver {
 
 /** Pass-and-play on one device (with optional bots). */
 export class LocalSession extends SessionBase {
-  constructor({ seats, state = null, seed }) {
+  constructor({ seats, state = null, seed, mode }) {
     super();
     this.kind = 'local';
     this.seats = seats;
@@ -102,6 +102,7 @@ export class LocalSession extends SessionBase {
       createGame({
         players: seats.map((s) => ({ id: s.id, name: s.name, character: s.character, bot: s.bot || null })),
         seed,
+        mode,
       });
     this.myIds = seats.filter((s) => !s.bot).map((s) => s.id);
     this.bots = new BotDriver(this, (p) => p.bot);
@@ -118,6 +119,7 @@ export class LocalSession extends SessionBase {
   rematch() {
     this.state = createGame({
       players: this.seats.map((s) => ({ id: s.id, name: s.name, character: s.character, bot: s.bot || null })),
+      mode: this.state.mode,
     });
     this.persist();
     this.emit({ events: [], state: this.state, reset: true });

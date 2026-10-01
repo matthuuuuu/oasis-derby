@@ -102,6 +102,46 @@ export function hutFrontSVG() {
   );
 }
 
+/**
+ * Crazier Camels: the stand beside the pyramid where the grey die sits and gets
+ * rolled after every coloured die. A little sandstone plinth with a looping arrow
+ * carved in its face. The die itself is drawn on top in HTML. viewBox 0 0 60 36.
+ */
+export function crazyStandSVG() {
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 36">` +
+    `<ellipse cx="30" cy="33.6" rx="27" ry="2.4" fill="${INK}" opacity=".18"/>` +
+    // front face, with a darker foot
+    `<path d="M5,13 H55 V29 Q55,32 52,32 H8 Q5,32 5,29 Z" fill="#c9cbd2"/>` +
+    `<path d="M5.8,27.2 H54.2 V29 Q54.2,31.2 52,31.2 H8 Q5.8,31.2 5.8,29 Z" fill="#9fa3ad" opacity=".7"/>` +
+    // lit top face
+    `<path d="M5,13 L10,6 H50 L55,13 Z" fill="#e6e8ee"/>` +
+    // carved loop arrow (the crazy camels go round and round)
+    `<path d="M34.6,25.6 A6.2,6.2 0 1 0 25.4,25.6" fill="none" stroke="#7d818c" stroke-width="2.2" stroke-linecap="round"/>` +
+    `<path d="M23.2,22.9 L25.6,26.6 L28.6,23.8" fill="none" stroke="#7d818c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>` +
+    // outline
+    `<path d="M5,13 L10,6 H50 L55,13 V29 Q55,32 52,32 H8 Q5,32 5,29 Z M5,13 H55" fill="none" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>` +
+    `</svg>`
+  );
+}
+
+/**
+ * Crazier Camels emblem: a looping arrow running the "wrong" way round, half black
+ * and half white like the two crazy camels. viewBox 0 0 48 48.
+ */
+export function loopArrowSVG() {
+  const arc1 = 'M33.6,35.5 A15,15 0 0 0 24,9';
+  const arc2 = 'M24,9 A15,15 0 0 0 14.4,35.5';
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">` +
+    `<path d="${arc1} A15,15 0 0 0 14.4,35.5" fill="none" stroke="${INK}" stroke-width="9.5" stroke-linecap="round"/>` +
+    `<path d="${arc1}" fill="none" stroke="#2e2828" stroke-width="5.5" stroke-linecap="round"/>` +
+    `<path d="${arc2}" fill="none" stroke="#fffaf0" stroke-width="5.5"/>` +
+    `<path d="M19.4,39.6 L10.2,38.9 L17,30.9 Z" fill="#fffaf0" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>` +
+    `</svg>`
+  );
+}
+
 /** An Egyptian-pound coin. value 1 = silver, 5 = gold. viewBox 0 0 40 40. */
 export function coinSVG(value = 1) {
   const gold = value !== 1;
