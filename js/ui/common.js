@@ -124,7 +124,8 @@ const crowds = { cheer: null, boo: null };
 /** A player's spectator tile. */
 export function SpectatorTile({ side, character, style }) {
   crowds[side] ||= crowdSVG(side);
-  const portrait = useMemo(() => portraitSVG(character), [character]);
+  // no built-in ring: the CSS outline matches the +1/−1 circle beside it exactly
+  const portrait = useMemo(() => portraitSVG(character, { ring: false }), [character]);
   return html`<div class=${`stile ${side}`} style=${style} aria-label=${`${side === 'cheer' ? 'cheering' : 'booing'} spectator tile`}>
     <${Raw} svg=${crowds[side]} class="crowd" />
     <${Raw} svg=${portrait} class="who" />

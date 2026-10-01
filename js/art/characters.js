@@ -118,7 +118,7 @@ const RAYS = (() => {
   return d;
 })();
 
-function framed(color, art, bg) {
+function framed(color, art, bg, ring = true) {
   if (!bg) return svg('0 0 100 100', art);
   const id = uid('pc');
   return svg(
@@ -129,7 +129,7 @@ function framed(color, art, bg) {
       `<circle cx="50" cy="50" r="42.5" fill="none" stroke="#fff" stroke-width="3" opacity=".3"/>` +
       art +
       '</g>' +
-      `<circle cx="50" cy="50" r="48.75" fill="none" stroke="${INK}" stroke-width="2.5"/>`
+      (ring ? `<circle cx="50" cy="50" r="48.75" fill="none" stroke="${INK}" stroke-width="2.5"/>` : '')
   );
 }
 
@@ -402,24 +402,31 @@ const ART = {
   },
 
   catkeeper() {
-    // Charlotte the historian: blonde ponytail tied with a ribbon, high-collared blouse,
-    // cameo brooch and a well-loved history book
-    const skin = '#f7d6b8', hair = '#f0c454', hairD = '#d6a33a', hairL = '#fbe39a', ribbon = '#e0344f', ribbonD = '#b82640';
-    const coat = '#2f6475', coatD = '#244f5d', blouseD = '#eadfca', book = '#c0462f', bookD = '#963322';
+    // Charlotte the historian, dressed for a grand evening: curls piled up under a little tiara,
+    // ringlets by her ears, a royal-blue gown with puff sleeves, a cameo choker and her history book
+    const skin = '#f7d6b8', hair = '#f0c454', hairD = '#d6a33a', hairL = '#fbe39a';
+    const gown = '#3559b8', gownD = '#26449a', gownL = '#5a7fd6', velvet = '#2a2550', book = '#c0462f', bookD = '#963322';
+    const curl = (x, y, r) =>
+      C(x, y, r, hair) +
+      L(`M${r1(x - r * 0.5)} ${r1(y + r * 0.15)}a${r1(r * 0.48)} ${r1(r * 0.48)} 0 1 1 ${r1(r * 0.66)} ${r1(r * 0.42)}`, 1.2, hairD);
+    const ringlet = tube('M25.4 49.5C21.4 53 25.8 56.6 23 60.2C21 62.8 22.6 66.4 25.6 65.4', hair, 2.6, 1);
     return inked(
-      // the ponytail swings out behind her head
-      sh('M40 30C28 22 11.5 30 11.5 48C11.5 61 15 71 22 80.5C19.5 70 20.5 58 26 50C29 44.5 34 39 40 36Z', hair,
-        S('M40 36C34 39 29 44.5 26 50C20.5 58 19.5 70 22 80.5C19 76 17.6 70.5 17.4 64.5C19 55 24 45.5 33 38.6Z', hairD) +
-        S('M30 27.6C22 28.4 16 35 15.4 44C18 37 23.5 31.6 31.4 29.4Z', hairL)) +
-        L('M33 31.6C22.5 33 16.6 42 17.2 54M35.4 34.4C26.6 40 23 50 22.6 62', 1.2, hairD) +
-        torso(coat) +
-        sym(P('M36.5 83L46.5 100L41 104H30.5C28.5 95.5 30.5 88 36.5 83Z', coatD)) +
-        P('M38.5 83L50 99L61.5 83Z', WHITE) +
-        L('M44.5 90Q50 93 55.5 90M46.5 94.6Q50 96.6 53.5 94.6', 1.2, blouseD) +
+      // curls piled on top (behind the front of the hair)
+      curl(38.5, 27, 7.4) + curl(61.5, 27, 7.4) + curl(44, 18.6, 6.6) + curl(56, 18.6, 6.6) + curl(50, 24.5, 8) +
+        // bare shoulders, the gown, puff sleeves
+        torso(skin) +
         neck(skin) +
-        P('M41.5 75V85Q50 89.5 58.5 85V75Q50 79 41.5 75Z', WHITE) +
-        L('M42 81.6Q50 85.6 58 81.6', 1.1, blouseD) +
-        E(50, 88, 3.4, 4.1, GOLD, ' stroke-width="1.6"') + E(50, 88, 2.1, 2.8, '#e8836f', NS) + E(50, 87.3, 1, 1.3, WHITE, NS) +
+        G('translate(0 -2.5)',
+          sh('M12 104C12 96 17 90.5 24 89.6C30 89 34 91.4 38.4 92C42 89.4 46 89 50 91.6C54 89 58 89.4 61.6 92C66 91.4 70 89 76 89.6C83 90.5 88 96 88 104Z', gown,
+            S('M66 104C68 98 72 93.6 77 92C82.6 93.4 86 97.6 88 104Z', gownD) +
+            S('M36 98.6C40 96.4 44 96 48 97.4C44 98.2 40 99.6 37 101.6Z', gownL, ' opacity=".8"')) +
+          tube('M24 89.6C30 89 34 91.4 38.4 92C42 89.4 46 89 50 91.6C54 89 58 89.4 61.6 92C66 91.4 70 89 76 89.6', WHITE, 2.2, 1.1) +
+          sym(sh('M14.5 92C14.5 85.5 20 82 26 82.6C32.4 83.2 35.6 88 34.2 93.4C32.6 98.8 25.6 100.4 20 98.4C16.4 97 14.5 95 14.5 92Z', gown,
+            S('M17.6 96.6C22.6 98.8 30 98 33.2 94.4C31.4 98.8 25 100.2 20 98.4Z', gownD)) +
+            L('M22.4 84.4Q24.4 90.4 22.6 97.6M28.6 84Q30.4 90.4 28.4 98.6', 1.1, gownD))) +
+        // velvet choker with her cameo
+        tube('M43 80.8Q50 83.4 57 80.8', velvet, 2.4, 1) +
+        E(50, 84.6, 3, 3.6, GOLD, ' stroke-width="1.5"') + E(50, 84.6, 1.8, 2.4, '#e8836f', NS) + E(50, 84, 0.9, 1.1, WHITE, NS) +
         ears(skin, 61) +
         C(24.3, 67.6, 1.9, WHITE, ' stroke-width="1.4"') + C(75.7, 67.6, 1.9, WHITE, ' stroke-width="1.4"') +
         head(skin) +
@@ -429,19 +436,17 @@ const ART = {
         L('M35.5 52.4Q40 50.4 44.5 51.8', 1.9, hairD) + L('M55.5 51.8Q60 50.4 64.5 52.4', 1.9, hairD) +
         nose(skin, 50, 64.8) +
         openSmile(50, 69.4, 4.8, 5.2) +
-        // hair pulled back smoothly from a side parting towards the ponytail
-        sh('M23.5 58C21 41 32 30 50 30C68 30 79 41 76.5 58C75 51 71 46.5 64 45C57 43.5 49 43.5 43.5 40.5C40 44 34 46.5 30 49C27 51.5 25 54.5 23.5 58Z', hair,
-          S('M62 31.6C72 35 78.6 44.5 76.5 58C75.5 53.5 73.6 50 71 47.8C70.6 41 67.4 35.6 62 31.6Z', hairD) +
-          S('M28.6 42.6C31.6 36.6 37.6 32.6 44.6 31.6C39.2 34.6 35.2 38.4 32.6 43.2Z', hairL)) +
-        L('M59 44.2Q47.5 37.6 40.5 33.4M69 47.4Q57.5 36.4 45.5 32', 1.2, hairD) +
-        // ribbon bow where the ponytail is tied
-        G('rotate(-24 38.5 31)',
-          P('M38.5 31C35.5 25.8 30 25.8 30.4 31C30 36.2 35.5 36.2 38.5 31Z', ribbon, ' stroke-width="1.8"') +
-          P('M38.5 31C41.5 25.8 47 25.8 46.6 31C47 36.2 41.5 36.2 38.5 31Z', ribbon, ' stroke-width="1.8"') +
-          P('M37.4 32.4L35 38.6L37.4 38L38.5 33ZM39.6 32.4L42 38.6L39.6 38L38.5 33Z', ribbonD, ' stroke-width="1.5"') +
-          E(38.5, 31, 2.2, 2.4, ribbonD, ' stroke-width="1.6"')) +
+        // the front of the hair, swept up from a centre parting
+        sh('M23.5 57C21 41 32 31 50 31C68 31 79 41 76.5 57C75 51 71.5 46.6 66 44.4C61 42.6 57 42.6 53.6 41.4Q50 40.2 46.4 41.4C43 42.6 39 42.6 34 44.4C28.5 46.6 25 51 23.5 57Z', hair,
+          S('M61.6 32.6C72 36 78.6 45 76.5 57C75.5 53 73.8 49.6 71.4 47.4C71 41.4 67.6 36.4 61.6 32.6Z', hairD) +
+          S('M28.4 43C31.4 37.4 37.4 33.6 44.4 32.6C39 35.6 35 39 32.6 43.6Z', hairL)) +
+        L('M31 47.6Q34.4 40.4 44.4 37.6M69 47.6Q65.6 40.4 55.6 37.6', 1.2, hairD) +
+        ringlet + flip(ringlet) +
+        // a little gold tiara with a blue jewel
+        P('M37.6 34.6L40.4 29.2L44.2 32.6L50 25.6L55.8 32.6L59.6 29.2L62.4 34.6Q50 31.8 37.6 34.6Z', GOLD, ' stroke-width="1.8"') +
+        C(50, 30.6, 1.9, '#5aa9e6', ' stroke-width="1.3"') + dots([40.4, 29.2, 59.6, 29.2], 0.9, WHITE) +
         // her favourite history book, a little pyramid on the cover
-        G('rotate(-12 70 93) translate(-3 0)',
+        G('rotate(-12 70 93) translate(-1 1)',
           P('M79 81.5H81.8V104H79Z', CREAM, ' stroke-width="2"') +
           sh('M60 80H79V104H60Z', book, S('M60 80H63.6V104H60Z', bookD)) +
           L('M60 85H63.6M60 99H63.6', 1.2, GOLD) +
@@ -453,11 +458,12 @@ const ART = {
 /**
  * Head-and-shoulders portrait, viewBox 0 0 100 100.
  * opts.bg (default true): round coloured badge with the character clipped to it.
+ * opts.ring (default true): the badge's own ink outline (off when CSS draws the outline instead).
  */
 export function portraitSVG(id, opts = {}) {
-  const { bg = true } = opts;
+  const { bg = true, ring = true } = opts;
   const ch = CHARACTERS.find((c) => c.id === id) || CHARACTERS[0];
-  return framed(ch.color, ART[ch.id](), bg);
+  return framed(ch.color, ART[ch.id](), bg, ring);
 }
 
 // --------------------------------------------------------- pharaoh mask --
