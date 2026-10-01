@@ -77,10 +77,11 @@ function camelPos(W, space, index, count, stack) {
   const boxed = onTrack && (col === 0 || col === 4) && row >= 1;
   const allowance = boxed ? 0.04 : row === 0 ? 0.12 : 0.35;
   const room = baseTop - (cellTop - cell * allowance);
-  const slot = pileSlot(STACK_STYLE, index, count, (i) => facesLeft(stack[i], space), { camW, camH, room });
+  const forwardLeft = space <= 8; // the race runs leftwards along the bottom row and up the left side
+  const slot = pileSlot(STACK_STYLE, index, count, (i) => facesLeft(stack[i], space), { camW, camH, room, forwardLeft });
 
   let x = centreX + slot.dx;
-  if (onTrack && index > 0) {
+  if (onTrack && count > 1) {
     // stay inside the space (and never poke over the board's outer rim)
     const minX = col === 0 ? cell * 0.04 : col * cell - cell * 0.03;
     const maxX = col === 4 ? W - camW - cell * 0.04 : col * cell + cell - camW + cell * 0.03;

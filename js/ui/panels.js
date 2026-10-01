@@ -12,9 +12,9 @@ import {
   Coins,
   Ticket,
   MiniTicket,
-  FinishCard,
   CamelDot,
   PharaohMarker,
+  SpectatorTile,
   camelName,
   characterById,
 } from './common.js';
@@ -36,7 +36,9 @@ function pickText(pick, state) {
     case 'roll':
       return 'rolls the pyramid';
     case 'tile':
-      return `puts a ${pick.side === 'cheer' ? 'cheering' : 'booing'} tile on space ${pick.space}`;
+      return pick.flip
+        ? `flips their tile to ${pick.side === 'cheer' ? 'cheering' : 'booing'} on space ${pick.space}`
+        : `puts a ${pick.side === 'cheer' ? 'cheering' : 'booing'} tile on space ${pick.space}`;
     case 'finishBet':
       return `bets on the overall ${pick.pile}`;
     case 'partner':
@@ -149,23 +151,30 @@ export function ActionBox({ state, me, mine, canAct, pending, pick, setPending, 
     if (!pending.space) {
       return html`<div class="box action-box">
         <div class="hint-bar">
-          <span style="font-size:24px">👆</span>
-          <span class="grow">Tap a glowing space on the track for your spectator tile${from ? ` (it moves from space ${from})` : ''}.</span>
+          <span class="tile-hint-ico"><${Raw} svg=${actionIcon.tile} /></span>
+          <span class="grow">Tap a glowing space on the track for your spectator tile${
+            from ? ` — tap space ${from} to flip it over where it is, or another space to move it` : ''
+          }.</span>
         </div>
         <div class="sheet-foot"><button class="btn ghost" onClick=${() => setPending(null)}>Cancel</button></div>
       </div>`;
     }
+    // on your own tile's space you can only flip it to the side it isn't showing
+    const flipping = from === pending.space;
+    const showing = flipping ? state.tiles[from].side : null;
+    const choice = (side, title, desc) => html`<button
+      class="pile tile-choice"
+      disabled=${showing === side}
+      onClick=${showing === side ? undefined : () => act({ type: 'tile', space: pending.space, side })}
+    >
+      <${SpectatorTile} side=${side} character=${me.character} />
+      <span><b>${title}</b><span>${showing === side ? 'Your tile already shows this side' : desc}</span></span>
+    </button>`;
     return html`<div class="box action-box">
-      <div class="box-title"><span class="grow">Space ${pending.space}: cheer or boo?</span></div>
+      <div class="box-title"><span class="grow">${flipping ? `Flip your tile on space ${pending.space}?` : `Space ${pending.space}: cheer or boo?`}</span></div>
       <div class="piles" style="margin-top:0">
-        <button class="pile" onClick=${() => act({ type: 'tile', space: pending.space, side: 'cheer' })}>
-          <span style="font-size:28px">📣</span>
-          <span><b>Cheer +1</b><span>Camels landing here jump 1 forward</span></span>
-        </button>
-        <button class="pile" onClick=${() => act({ type: 'tile', space: pending.space, side: 'boo' })}>
-          <span style="font-size:28px">👎</span>
-          <span><b>Boo −1</b><span>Camels landing here slip 1 back, underneath</span></span>
-        </button>
+        ${choice('cheer', 'Cheer +1', 'Camels landing here jump 1 forward')}
+        ${choice('boo', 'Boo −1', 'Camels landing here slip 1 back, underneath')}
       </div>
       <p class="muted" style="font-size:13px;font-weight:700;margin-top:10px">Either way, you earn 1 coin every time a camel lands on it.</p>
       <div class="sheet-foot"><button class="btn ghost" onClick=${() => setPending({ kind: 'tile' })}>Pick another space</button></div>
@@ -190,7 +199,7 @@ export function ActionBox({ state, me, mine, canAct, pending, pick, setPending, 
       </button>
       <button class=${cls('tile')} disabled=${watching} onClick=${click(() => setPending({ kind: 'tile' }))}>
         <${Raw} svg=${actionIcon.tile} class="ico" />
-        <b>${tileMoved ? (mine ? 'Move your tile' : 'Move their tile') : 'Spectator tile'}</b><small>Cheer or boo a space</small>
+        <b>${tileMoved ? (mine ? 'Move or flip tile' : 'Move their tile') : 'Spectator tile'}</b><small>Cheer or boo a space</small>
       </button>
       <button class=${cls('finishBet')} disabled=${watching || !cards} onClick=${click(() => openFinish())}>
         <${Raw} svg=${actionIcon.finishBet} class="ico" />
@@ -202,39 +211,6 @@ export function ActionBox({ state, me, mine, canAct, pending, pick, setPending, 
         <b>Partner up</b><small>${me.partner ? `With ${nameOf(state, me.partner)}` : 'Share a ticket at leg end'}</small>
       </button>`}
     </div>
-  </div>`;
-}
-
-// ─── Race bet piles ──────────────────────────────────────────────────────────
-
-export function RaceBets({ state, canAct, openFinish, myId, pick }) {
-  const picked = (key) => (pick?.kind === 'finishBet' && pick.pile === key ? pickClass(pick.phase) : '');
-  const pile = (key, label, emoji, bets) => html`<button class=${`pile ${picked(key)}`} disabled=${!canAct} onClick=${canAct ? () => openFinish(key) : undefined}>
-    <span class="stack">
-      ${bets.length
-        ? bets.slice(-3).map((b, i) => html`<${FinishCard} back style=${`left:${i * 2}px;top:${i * -2 + 4}px`} />`)
-        : html`<span style="font-size:26px;display:grid;place-items:center;height:100%">${emoji}</span>`}
-    </span>
-    <span style="min-width:0">
-      <b>${label}</b>
-      <span>${bets.length ? `${bets.length} card${bets.length === 1 ? '' : 's'}` : 'No cards yet'}</span>
-      <span class="placers">${bets.slice(-5).map((b) => html`<${Avatar} character=${playerById(state, b.player)?.character} size="xs" />`)}</span>
-    </span>
-  </button>`;
-  const me = playerById(state, myId);
-  const mine = [...state.winnerBets.map((b) => ({ ...b, pile: 'winner' })), ...state.loserBets.map((b) => ({ ...b, pile: 'loser' }))].filter(
-    (b) => b.player === myId && b.color
-  );
-  return html`<div class="box">
-    <div class="box-title"><span class="grow">Race bets</span><small>Pays 8 · 5 · 3 · 2 · 1 — first right bets earn most</small></div>
-    <div class="piles" style="margin-top:0">
-      ${pile('winner', 'Overall winner', '🏆', state.winnerBets)}
-      ${pile('loser', 'Overall loser', '🐢', state.loserBets)}
-    </div>
-    ${me && mine.length > 0 &&
-    html`<p class="muted" style="font-size:13px;font-weight:800;margin-top:10px">
-      Your secret bets: ${mine.map((b) => html`<span class="nowrap"><${CamelDot} camel=${b.color} />${camelName(b.color)} to ${b.pile === 'winner' ? 'win' : 'lose'} </span>`)}
-    </p>`}
   </div>`;
 }
 
@@ -306,7 +282,8 @@ export function describe(e, s, secretOk = () => false) {
     case 'legBet':
       return html`${n(e.player)} took the ${cam(e.color)} <b>${e.value}</b> ticket.`;
     case 'placeTile':
-      return html`${n(e.player)} ${e.from ? 'moved their' : 'placed a'} ${e.side === 'cheer' ? 'cheering 📣' : 'booing 👎'} tile ${e.from ? `from ${e.from} ` : ''}to space <b>${e.space}</b>.`;
+      if (e.from === e.space) return html`${n(e.player)} flipped their tile to <b>${e.side === 'cheer' ? 'cheering' : 'booing'}</b> on space <b>${e.space}</b>.`;
+      return html`${n(e.player)} ${e.from ? 'moved their' : 'placed a'} ${e.side === 'cheer' ? 'cheering' : 'booing'} tile ${e.from ? `from ${e.from} ` : ''}to space <b>${e.space}</b>.`;
     case 'roll':
       if (e.die === 'grey') {
         const why = e.reason === 'carrying' ? ' (it carries racers, so it must go)' : e.reason === 'stacked' ? ' (it sits right on the other one)' : '';
@@ -319,19 +296,19 @@ export function describe(e, s, secretOk = () => false) {
       return html`${cam(e.camel)} ${e.dir > 0 ? 'hops' : 'staggers back'} to space <b>${e.to}</b>${riders.length ? html` carrying ${riders.map((c, i) => html`${i ? ', ' : ''}${cam(c)}`)}` : ''}.`;
     }
     case 'tileEffect':
-      return html`${n(e.owner)}'s crowd ${e.side === 'cheer' ? 'cheered 📣' : 'booed 👎'} ${cam(e.camel)} to space ${e.to}! <span class="plus">+1</span> for ${n(e.owner)}.`;
+      return html`${n(e.owner)}'s crowd ${e.side === 'cheer' ? 'cheered' : 'booed'} ${cam(e.camel)} to space ${e.to}! <span class="plus">+1</span> for ${n(e.owner)}.`;
     case 'finishBet':
       return html`${n(e.player)} placed a secret card on the <b>${e.pile === 'winner' ? 'overall winner' : 'overall loser'}</b> pile${
         e.color && (s.status === 'finished' || secretOk(e.player)) ? html` (${cam(e.color)})` : ''
       }.`;
     case 'partner':
-      return html`${n(e.player)} and ${n(e.target)} are betting partners this leg 🤝`;
+      return html`${n(e.player)} and ${n(e.target)} are betting partners this leg.`;
     case 'legEnd':
       return null;
     case 'newLeg':
       return null;
     case 'gameEnd':
-      return html`🏆 The race is over!`;
+      return html`The race is over!`;
     default:
       return null;
   }

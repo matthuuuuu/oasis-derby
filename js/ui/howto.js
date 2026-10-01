@@ -3,19 +3,21 @@ import { html, useState } from '../../vendor/preact-htm.js';
 import { ACTION_ICONS } from '../art/tokens.js';
 import { Sheet, Raw, CamelSprite, Ticket, Die, SpectatorTile, Icon } from './common.js';
 import { pileSlot, STACK_STYLE } from './stacking.js';
+import { isCrazy } from '../engine/constants.js';
 
 const icons = Object.fromEntries(Object.entries(ACTION_ICONS).map(([k, f]) => [k, f()]));
 
 const flip = 'transform:scaleX(-1);width:86px';
 
 /**
- * Camels piled up exactly the way the board piles them (same stacking code): the bottom camel
- * stands facing `faceLeft ? left : right`, the rest lie down alternating which way they look.
+ * Camels piled up exactly the way the board piles them (same stacking code). In the picture the
+ * race runs to the right: coloured camels face right, the crazy camels (white, black) face left.
  * Sizes are multiples of --w (one camel's width), so the picture shrinks to fit small phones.
  */
-function Pile({ camels, faceLeft = false }) {
+function Pile({ camels }) {
   const h = 100 / 120; // a camel's height, in camel widths
-  const slots = camels.map((_, i) => pileSlot(STACK_STYLE, i, camels.length, () => faceLeft, { camW: 1, camH: h, room: 99 }));
+  const ruleLeft = (i) => isCrazy(camels[i]);
+  const slots = camels.map((_, i) => pileSlot(STACK_STYLE, i, camels.length, ruleLeft, { camW: 1, camH: h, room: 99, forwardLeft: false }));
   const minDx = Math.min(0, ...slots.map((s) => s.dx));
   const width = 1 + Math.max(0, ...slots.map((s) => s.dx)) - minDx;
   const height = h + Math.max(...slots.map((s) => s.rise));
@@ -35,8 +37,8 @@ const PAGES = [
     art: () => html`<div class="howto-art howto-camels">
       <${Pile} camels=${['blue']} />
       <${Pile} camels=${['red', 'purple', 'yellow']} />
-      <${Pile} camels=${['green', 'white']} faceLeft />
-      <${Pile} camels=${['black']} faceLeft />
+      <${Pile} camels=${['green', 'white']} />
+      <${Pile} camels=${['black']} />
     </div>`,
     points: [
       html`Five <b>racing camels</b> run <b>clockwise</b> around the oasis. Nobody owns a camel — you <b>bet</b> on them.`,

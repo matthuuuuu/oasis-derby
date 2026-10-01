@@ -171,15 +171,24 @@ export function FinishBetSheet({ state, me, initialPile = 'winner', needsGate, o
     </${Sheet}>`;
   }
 
+  // how many cards are already on each pile (earlier right bets pay more), and your own bets so far
+  const sofar = (bets) => (bets.length ? `${bets.length} card${bets.length === 1 ? '' : 's'} on it so far` : 'No cards on it yet');
+  const mine = [...state.winnerBets.map((b) => ({ ...b, pile: 'winner' })), ...state.loserBets.map((b) => ({ ...b, pile: 'loser' }))].filter(
+    (b) => b.player === me.id && b.color
+  );
   return html`<${Sheet} title="Bet on the whole race" subtitle="Your card stays face-down until the race ends" onClose=${onClose}>
     <div class="mode-grid">
       <button class="mode-card" aria-pressed=${pile === 'winner'} onClick=${() => setPile('winner')}>
-        <h3>🏆 Overall winner</h3><p>First across the finish</p>
+        <h3>🏆 Overall winner</h3><p>First across the finish</p><p class="pile-count">${sofar(state.winnerBets)}</p>
       </button>
       <button class="mode-card" aria-pressed=${pile === 'loser'} onClick=${() => setPile('loser')}>
-        <h3>🐢 Overall loser</h3><p>Furthest behind at the end</p>
+        <h3>🐢 Overall loser</h3><p>Furthest behind at the end</p><p class="pile-count">${sofar(state.loserBets)}</p>
       </button>
     </div>
+    ${mine.length > 0 &&
+    html`<p class="muted" style="font-size:13px;font-weight:800;margin-top:10px">
+      Your race bets so far: ${mine.map((b) => html`<span class="nowrap"><${CamelDot} camel=${b.color} />${camelName(b.color)} to ${b.pile === 'winner' ? 'win' : 'lose'} </span>`)}
+    </p>`}
     <p class="muted" style="font-weight:800;margin:14px 0 4px;font-size:14px">Pick a card from your hand (one per camel):</p>
     <div class="card-row finish-hand">
       ${RACING_CAMELS.map((c) => {

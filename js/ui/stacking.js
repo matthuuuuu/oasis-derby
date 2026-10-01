@@ -7,8 +7,12 @@
 //
 // tools/stack-options.html shows the styles side by side.
 
-/** The pile style the game uses (one of the STACK_STYLES keys). */
-export const STACK_STYLE = 'lazy';
+/**
+ * The pile style the game uses (one of the STACK_STYLES keys). 'staircase': every coloured
+ * camel faces the way the race runs (crazy camels face backwards), and each camel up the
+ * pile sits a little further back so all the heads peek out in front.
+ */
+export const STACK_STYLE = 'staircase';
 
 /** Camel width as a fraction of the board width (0.137 = the first 0.145, shrunk 10%, then grown 5%). */
 export const CAMEL_SIZE = 0.137;
@@ -62,8 +66,9 @@ function slotShape(style, index, count) {
 /**
  * Where camel `index` of a `count` pile goes.
  *   ruleLeft(i)  — does camel i face left by the rules (racing direction)?
- *   env: { camW, camH, room } — room = how far (px) the bottom camel's sprite
- *        top may be lifted before the pile hits its ceiling.
+ *   env: { camW, camH, room, forwardLeft } — room = how far (px) the bottom camel's sprite
+ *        top may be lifted before the pile hits its ceiling; forwardLeft = the race runs
+ *        leftwards on this space (the staircase steps back away from that direction).
  * Returns { dx, rise, pose, faceLeft } in pixels.
  */
 export function pileSlot(style, index, count, ruleLeft, env) {
@@ -80,8 +85,10 @@ export function pileSlot(style, index, count, ruleLeft, env) {
   // sideways: toward where it looks (so its head pokes out), or a staircase
   let dx = 0;
   if (shape.stair) {
-    const tail = bottomLeft ? 1 : -1; // the bottom camel's tail side
-    dx = (index - (count - 1) / 2) * shape.stair * tail;
+    // step back, away from the way the race runs (so a crazy camel at the bottom doesn't flip it)
+    const forwardLeft = env.forwardLeft ?? bottomLeft;
+    const back = forwardLeft ? 1 : -1;
+    dx = (index - (count - 1) / 2) * shape.stair * back;
   } else if (shape.dx) {
     dx = (faceLeft ? -1 : 1) * shape.dx;
   }

@@ -701,6 +701,23 @@ p {
   color: var(--muted);
   font-weight: 700;
 }
+.mode-card .pile-count {
+  margin-top: 4px;
+  color: var(--ink);
+  font-weight: 800;
+}
+/* spectator tile choice (cheer / boo): a small picture of the tile you'd place */
+.tile-choice .stile {
+  width: 44px;
+  flex: none;
+}
+.tile-choice:disabled {
+  opacity: 0.5;
+}
+.tile-hint-ico {
+  width: 30px;
+  flex: none;
+}
 .divider-text {
   display: flex;
   align-items: center;

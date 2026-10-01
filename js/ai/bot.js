@@ -147,6 +147,7 @@ export function evaluateActions(s, playerId, { legSims = 1500, raceSims = 600 } 
     const backers = behind.filter((c) => myColors.has(c)).length;
     const others = behind.filter((c) => !isCrazy(c) && !myColors.has(c)).length;
     const side = backers >= others ? 'cheer' : 'boo';
+    if (space === current && s.tiles[current].side === side) continue; // its own tile already shows that side
     options.push({ action: { type: 'tile', space, side }, ev: income * 0.95 + 0.05 * (backers + others), why: 'spectator coins' });
   }
 

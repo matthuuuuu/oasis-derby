@@ -262,9 +262,9 @@ export function tileError(s, playerId, space, side = 'cheer') {
   if (s.stacks[space]?.length) return 'That space has camels on it.';
   const here = s.tiles[space];
   if (here) {
-    return here.owner === playerId
-      ? 'Your tile is already there — pick a different space.'
-      : 'Another spectator tile is already there.';
+    // your own tile can be flipped over where it is (cheer ↔ boo) instead of being moved
+    if (here.owner !== playerId) return 'Another spectator tile is already there.';
+    return here.side === side ? `Your tile already shows ${side === 'cheer' ? 'cheering' : 'booing'} there — flip it or pick another space.` : null;
   }
   for (const adj of [space - 1, space + 1]) {
     const t = s.tiles[adj];
@@ -273,9 +273,12 @@ export function tileError(s, playerId, space, side = 'cheer') {
   return null;
 }
 
+/** Spaces where `playerId` may put their tile with at least one side up (their own space: flipped). */
 export function validTileSpaces(s, playerId) {
   const out = [];
-  for (let sp = 2; sp <= TRACK_SPACES; sp++) if (!tileError(s, playerId, sp)) out.push(sp);
+  for (let sp = 2; sp <= TRACK_SPACES; sp++) {
+    if (!tileError(s, playerId, sp, 'cheer') || !tileError(s, playerId, sp, 'boo')) out.push(sp);
+  }
   return out;
 }
 
@@ -316,7 +319,7 @@ export function legalActions(s, playerId) {
   const acts = [{ type: 'roll' }];
   for (const color of RACING_CAMELS) if (s.legStacks[color].length) acts.push({ type: 'legBet', color });
   for (const space of validTileSpaces(s, p.id)) {
-    acts.push({ type: 'tile', space, side: 'cheer' }, { type: 'tile', space, side: 'boo' });
+    for (const side of ['cheer', 'boo']) if (!tileError(s, p.id, space, side)) acts.push({ type: 'tile', space, side });
   }
   for (const color of p.finishCards) {
     acts.push({ type: 'finishBet', pile: 'winner', color }, { type: 'finishBet', pile: 'loser', color });

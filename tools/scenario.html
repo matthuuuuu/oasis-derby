@@ -26,8 +26,8 @@
   document.getElementById('scene').innerHTML = sceneSVG(theme);
 
   const names = [
-    ['Sam', 'merchant'], ['Hattie', 'explorer', 'clever'], ['Karim', 'camelmaster', 'clever'], ['Zara', 'mystic', 'easy'],
-    ['Lotfia', 'aviator', 'clever'], ['Bashir', 'bookie', 'clever'], ['Clementine', 'socialite', 'easy'], ['Nour', 'catkeeper', 'clever'],
+    ['Sam', 'merchant'], ['Ruby', 'explorer', 'clever'], ['Karim', 'camelmaster', 'clever'], ['Zara', 'mystic', 'easy'],
+    ['Amira', 'aviator', 'clever'], ['Bashir', 'bookie', 'clever'], ['Clementine', 'socialite', 'easy'], ['Nour', 'catkeeper', 'clever'],
   ];
   const players = (n) => names.slice(0, n).map(([name, character, bot], i) => ({ id: `p${i}`, name, character, bot: bot || null }));
 
@@ -90,7 +90,7 @@
     render(html`<${GameScreen} session=${fake(s)} onExit=${() => {}} />`, root);
   }
   if (c === 'botpick') {
-    // Hattie (a bot) makes a move that arrives `at` ms after load, so a screenshot taken
+    // Ruby (a bot) makes a move that arrives `at` ms after load, so a screenshot taken
     // just after it shows the "hover" on what she picked:  &kind=legBet|roll|tile|finishBet
     const kind = q.get('kind') || 'legBet';
     const s = midGame(4);

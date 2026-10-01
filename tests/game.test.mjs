@@ -350,9 +350,22 @@ test('spectator tile placement rules', () => {
   assert.equal(err(2), null);
   // p1 may move its own tile next to where it currently is…
   assert.equal(err(10, 'p1'), null);
-  // …but not onto the same space.
-  assert.match(err(9, 'p1'), /different space/);
+  // …or flip it over where it is (its cheering tile on 9 → booing), but not "flip" it to the side it already shows
+  assert.equal(err(9, 'p1'), null);
+  assert.match(validateAction({ ...s, turn: 1 }, 'p1', { type: 'tile', space: 9, side: 'cheer' }), /already shows cheering/);
   assert.deepEqual(validTileSpaces(s, 'p0'), [2, 4, 5, 7, 11, 12, 13, 15]);
+  assert.ok(validTileSpaces(s, 'p1').includes(9));
+});
+
+test('a spectator tile can be flipped over on its own space', () => {
+  let s = game(3, { stacks: { 1: RACING_CAMELS, 14: ['white'], 16: ['black'] } });
+  ({ state: s } = applyAction(s, 'p0', { type: 'tile', space: 5, side: 'cheer' }));
+  s.turn = 0;
+  assert.deepEqual(legalActions(s, 'p0').filter((a) => a.type === 'tile' && a.space === 5), [{ type: 'tile', space: 5, side: 'boo' }]);
+  let events;
+  ({ state: s, events } = applyAction(s, 'p0', { type: 'tile', space: 5, side: 'boo' }));
+  assert.deepEqual(s.tiles, { 5: { owner: 'p0', side: 'boo' } });
+  assert.deepEqual(events[0], { t: 'placeTile', player: 'p0', space: 5, side: 'boo', from: 5 });
 });
 
 test('moving a spectator tile removes it from its old space', () => {

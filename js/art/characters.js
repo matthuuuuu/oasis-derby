@@ -3,10 +3,10 @@
 // docs/ART_STYLE.md. Pure functions only: no DOM access at import time.
 
 export const CHARACTERS = [
-  { id: 'explorer', name: 'Hattie', title: 'The Archaeologist', color: '#7fd1c6' },
-  { id: 'aviator', name: 'Lotfia', title: 'The Aviator', color: '#8cc4f0' },
+  { id: 'explorer', name: 'Ruby', title: 'The Archaeologist', color: '#7fd1c6' },
+  { id: 'aviator', name: 'Amira', title: 'The Aviator', color: '#8cc4f0' },
   { id: 'merchant', name: 'Omar', title: 'The Spice Merchant', color: '#f5b94f' },
-  { id: 'camelmaster', name: 'Karim', title: 'The Camel Master', color: '#8fd39a' },
+  { id: 'camelmaster', name: 'Karim', title: 'The Professor', color: '#8fd39a' },
   { id: 'bookie', name: 'Bashir', title: 'The Bookmaker', color: '#cfd66a' },
   { id: 'mystic', name: 'Zara', title: 'The Fortune Teller', color: '#f5a38c' },
   { id: 'socialite', name: 'Clementine', title: 'The Socialite', color: '#eea6cf' },

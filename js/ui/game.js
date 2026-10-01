@@ -3,7 +3,7 @@
 import { html, useEffect, useRef, useState, useCallback } from '../../vendor/preact-htm.js';
 import { currentPlayer, validTileSpaces, playerById } from '../engine/game.js';
 import { Board, viewFromState } from './board.js';
-import { TurnBanner, TicketBar, ActionBox, RaceBets, PlayerList, OddsBox, LogBox, diceLeftIndicator, nameOf } from './panels.js';
+import { TurnBanner, TicketBar, ActionBox, PlayerList, OddsBox, LogBox, diceLeftIndicator, nameOf } from './panels.js';
 import { LegResultsSheet, FinaleSheet, FinishBetSheet, PartnerSheet, MenuSheet, ConfirmSheet, EndedSheet } from './modals.js';
 import { HowToSheet } from './howto.js';
 import { Icon, toast, camelName } from './common.js';
@@ -23,7 +23,7 @@ function pickOf(e) {
     case 'roll':
       return { kind: 'roll', player: e.player };
     case 'placeTile':
-      return { kind: 'tile', player: e.player, space: e.space, side: e.side };
+      return { kind: 'tile', player: e.player, space: e.space, side: e.side, flip: e.from === e.space };
     case 'finishBet':
       return { kind: 'finishBet', player: e.player, pile: e.pile };
     case 'partner':
@@ -131,7 +131,7 @@ export function GameScreen({ session, onExit, onLobby }) {
           break;
         case 'partner':
           sfx.cheer();
-          toast(`${nameOf(batch.state, e.player)} & ${nameOf(batch.state, e.target)} are partners this leg 🤝`);
+          toast(`${nameOf(batch.state, e.player)} & ${nameOf(batch.state, e.target)} are partners this leg`);
           await wait(fast ? 200 : 400);
           break;
         case 'legEnd':
@@ -375,13 +375,6 @@ export function GameScreen({ session, onExit, onLobby }) {
         act=${act}
         openFinish=${(pile = 'winner') => setModal({ type: 'finish', pile })}
         openPartner=${() => setModal({ type: 'partner' })}
-      />
-      <${RaceBets}
-        state=${shown}
-        canAct=${canAct}
-        pick=${pick}
-        openFinish=${(pile) => setModal({ type: 'finish', pile })}
-        myId=${session.myIds.length === 1 ? session.myIds[0] : null}
       />
       ${prefs.odds && html`<${OddsBox} state=${shown} />`}
       <${PlayerList} state=${shown} lobby=${session.lobby} myIds=${session.myIds} />
