@@ -1586,33 +1586,36 @@ p {
   width: 100%;
   height: auto;
 }
-.stile .who {
+/* owner's face top-left, +1/−1 top-right: two equal circles */
+.stile .who,
+.stile .val {
   position: absolute;
-  left: 50%;
-  top: 6%;
-  width: 44%;
-  transform: translateX(-50%);
+  top: 7%;
+  width: 40%;
+  aspect-ratio: 1;
   border-radius: 50%;
   box-shadow: 0 0 0 2px #3b2412;
 }
+.stile .who {
+  left: 7%;
+}
 .stile .who svg {
+  display: block;
   width: 100%;
   height: 100%;
   border-radius: 50%;
 }
 .stile .val {
-  position: absolute;
-  right: 4%;
-  top: 4%;
+  right: 7%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-display);
-  font-size: 11px;
-  font-size: 30cqw;
+  font-size: 10px;
+  font-size: 23cqw;
   line-height: 1;
   color: #fff;
   background: var(--good);
-  border: 2px solid #3b2412;
-  border-radius: 999px;
-  padding: 1px 5px 2px;
 }
 .stile.boo .val {
   background: var(--bad);
