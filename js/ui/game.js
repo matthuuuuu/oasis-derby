@@ -310,7 +310,7 @@ export function GameScreen({ session, onExit, onLobby }) {
     }
   })();
 
-  return html`<div class=${`game ${shown.status === 'playing' ? 'docked' : ''}`}>
+  return html`<div class="game">
     <div class="topbar">
       <button class="icon-btn" aria-label="Menu" onClick=${() => setModal({ type: 'menu' })}><${Icon} name="menu" /></button>
       <div class="leg-pill"><b>Leg ${shown.leg}</b>${diceLeftIndicator(shown)}</div>

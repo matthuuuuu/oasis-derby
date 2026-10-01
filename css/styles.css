@@ -2683,28 +2683,6 @@ button.pile:active:not(:disabled) {
     width: 38px;
     height: 38px;
   }
-  /* your-turn actions dock at the bottom of the screen, within thumb reach */
-  .game.docked {
-    padding-bottom: calc(150px + var(--safe-b));
-  }
-  .action-box {
-    position: fixed;
-    left: 8px;
-    right: 8px;
-    bottom: calc(8px + var(--safe-b));
-    z-index: 30;
-    max-height: 62vh;
-    overflow: auto;
-    border: var(--bw) solid var(--accent-2);
-    box-shadow: var(--shadow-lg);
-    animation: dock-up 0.25s ease-out;
-    max-width: 640px;
-    margin: 0 auto;
-  }
-  /* on someone else's turn the dock stays, so you can watch what they pick */
-  .action-box.watching {
-    border-color: var(--line-strong);
-  }
   .action-box .box-title {
     font-size: 16px;
     margin-bottom: 6px;
@@ -2741,11 +2719,6 @@ button.pile:active:not(:disabled) {
   .action-box .hint-bar .ticket {
     width: 54px;
     flex: none;
-  }
-}
-@keyframes dock-up {
-  from {
-    transform: translateY(40px);
   }
 }
 @media (max-width: 480px) {
@@ -2991,15 +2964,5 @@ button.pile:active:not(:disabled) {
     width: calc(100dvh - 104px);
     max-width: none;
     padding-top: 12px;
-  }
-  .game.docked {
-    padding-bottom: 20px;
-  }
-  .action-box {
-    position: static;
-    max-height: none;
-    max-width: none;
-    margin: 0;
-    animation: none;
   }
 }
