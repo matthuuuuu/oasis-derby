@@ -8,6 +8,7 @@ import { ACTION_ICONS, pyramidTicketSVG } from '../art/tokens.js';
 import {
   Raw,
   Icon,
+  Sticker,
   Avatar,
   Coins,
   Ticket,
@@ -53,7 +54,7 @@ function pickText(pick, state) {
 export function TurnBanner({ state, mine, isBot, localMulti, pick }) {
   if (state.status === 'finished') {
     return html`<div class="turn-banner">
-      <span style="font-size:34px">🏆</span>
+      <${Sticker} name="trophy" size=${34} />
       <div class="grow"><h2>The race is over!</h2><p>${camelName(state.final.winner)} won the race.</p></div>
     </div>`;
   }
@@ -257,13 +258,13 @@ export function OddsBox({ state }) {
   }, [state.seq, state.status]);
   if (!odds) return null;
   return html`<div class="box">
-    <div class="box-title"><span class="grow">🔮 Fortune teller</span><small>chance to lead this leg · win the race</small></div>
+    <div class="box-title"><span class="grow"><${Sticker} name="crystalBall" size=${18} /> Fortune teller</span><small>chance to lead this leg · win the race</small></div>
     <div class="odds">
       ${RACING_CAMELS.map(
         (c) => html`<div>
           <div class="bar"><i style=${`height:${Math.round(odds.leg.first[c] * 100)}%;--c:var(--${c})`}></i></div>
           <div class="pct">${Math.round(odds.leg.first[c] * 100)}%</div>
-          <div class="muted">🏆 ${Math.round(odds.race.win[c] * 100)}%</div>
+          <div class="muted"><${Sticker} name="trophy" size=${14} /> ${Math.round(odds.race.win[c] * 100)}%</div>
         </div>`
       )}
     </div>

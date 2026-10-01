@@ -280,6 +280,161 @@ export const ACTION_ICONS = {
     ),
 };
 
+/**
+ * Little sticker pictures used instead of emoji, in the same ink-outline style as the
+ * action icons. All viewBox 0 0 48 48 except the medals (medalSVG).
+ */
+export const STICKERS = {
+  /** A golden winner's cup on a wooden plinth. */
+  trophy: () =>
+    wrap48(
+      // handles
+      `<path d="M14,13 H9.5 C6.4,13 5.6,16.6 6.8,19.4 C8.4,23 11.4,24.6 15,25" fill="none" stroke="${INK}" stroke-width="5.6" stroke-linecap="round"/>` +
+        `<path d="M14,13 H9.5 C6.4,13 5.6,16.6 6.8,19.4 C8.4,23 11.4,24.6 15,25" fill="none" stroke="#f2b84b" stroke-width="2.4" stroke-linecap="round"/>` +
+        `<path d="M34,13 H38.5 C41.6,13 42.4,16.6 41.2,19.4 C39.6,23 36.6,24.6 33,25" fill="none" stroke="${INK}" stroke-width="5.6" stroke-linecap="round"/>` +
+        `<path d="M34,13 H38.5 C41.6,13 42.4,16.6 41.2,19.4 C39.6,23 36.6,24.6 33,25" fill="none" stroke="#d99a1e" stroke-width="2.4" stroke-linecap="round"/>` +
+        // stem and plinth
+        `<path d="M21,30 H27 L26.2,35.5 H21.8 Z" fill="#d99a1e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>` +
+        `<rect x="14" y="35" width="20" height="8.5" rx="2.2" fill="#a4552a" stroke="${INK}" stroke-width="2.2"/>` +
+        `<rect x="19" y="37.6" width="10" height="3.4" rx="1" fill="#fbe08a" stroke="${INK}" stroke-width="1.3"/>` +
+        // the cup, lit on the left
+        `<path d="M12.5,9 H35.5 V18.5 C35.5,26.5 30.5,31 24,31 C17.5,31 12.5,26.5 12.5,18.5 Z" fill="#f2b84b"/>` +
+        `<path d="M29,9 H35.5 V18.5 C35.5,26.5 30.5,31 24,31 C28.5,28 30,23 30,17 Z" fill="#d99a1e"/>` +
+        `<path d="M16,12 V18.5 C16,21.5 17,24 18.6,25.8" fill="none" stroke="#fff3d4" stroke-width="2.2" stroke-linecap="round" opacity=".9"/>` +
+        `<path d="M12.5,9 H35.5 V18.5 C35.5,26.5 30.5,31 24,31 C17.5,31 12.5,26.5 12.5,18.5 Z" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>` +
+        `<rect x="11" y="6" width="26" height="4.4" rx="2.2" fill="#fbe08a" stroke="${INK}" stroke-width="2.2"/>` +
+        // a star on the cup
+        `<path d="M24,13.4 l1.9,3.9 4.3,.6 -3.1,3 .7,4.3 -3.8,-2 -3.8,2 .7,-4.3 -3.1,-3 4.3,-.6 Z" fill="#fff3d4" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>` +
+        `<path d="M40,4 l1,2.6 2.6,1 -2.6,1 -1,2.6 -1,-2.6 -2.6,-1 2.6,-1 Z" fill="#fffbe0" stroke="${INK}" stroke-width="1" stroke-linejoin="round"/>`
+    ),
+
+  /** A chequered finish flag waving from a wooden pole. */
+  flag: () => {
+    const id = nextId('flg');
+    const cloth = 'M12.5,8.5 C18,5.5 23.5,11.5 29.5,8.5 C34,6.3 37.6,6.6 41,8.4 V27 C37.6,25.2 34,24.9 29.5,27.1 C23.5,30.1 18,24.1 12.5,27.1 Z';
+    let squares = '';
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 6; c++) {
+        if ((r + c) % 2) continue;
+        // each column rides the wave a little, so the chequers ripple with the cloth
+        const lift = [0, -1.6, 0.6, 1.6, -0.6, -1.2][c];
+        squares += `<rect x="${(12.5 + c * 4.75).toFixed(2)}" y="${(5 + r * 4.75 + lift).toFixed(2)}" width="4.75" height="4.75"/>`;
+      }
+    }
+    return wrap48(
+      `<defs><clipPath id="${id}"><path d="${cloth}"/></clipPath></defs>` +
+        `<ellipse cx="11" cy="44.4" rx="6" ry="1.8" fill="${INK}" opacity=".18"/>` +
+        `<path d="${cloth}" fill="#fff6e0"/>` +
+        `<g clip-path="url(#${id})" fill="#2b1d12">${squares}</g>` +
+        `<path d="${cloth}" fill="none" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>` +
+        `<rect x="9" y="6" width="3.6" height="38" rx="1.8" fill="#a4552a" stroke="${INK}" stroke-width="2"/>` +
+        `<circle cx="10.8" cy="5.4" r="2.9" fill="#f2b84b" stroke="${INK}" stroke-width="1.8"/>`
+    );
+  },
+
+  /** The crown the race leader wears. */
+  crown: () =>
+    wrap48(
+      `<path d="M8,37 L5.5,15.5 L16,23.5 L24,9.5 L32,23.5 L42.5,15.5 L40,37 Z" fill="#f2b84b" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>` +
+        `<path d="M24,9.5 L32,23.5 L42.5,15.5 L40,37 H30 Z" fill="#d99a1e" opacity=".55"/>` +
+        `<rect x="7.4" y="31.5" width="33.2" height="7.5" rx="2" fill="#d99a1e" stroke="${INK}" stroke-width="2.2"/>` +
+        `<circle cx="16" cy="35.2" r="2" fill="#e0344f" stroke="${INK}" stroke-width="1.3"/><circle cx="24" cy="35.2" r="2.2" fill="#1a9fd6" stroke="${INK}" stroke-width="1.3"/><circle cx="32" cy="35.2" r="2" fill="#2a9a45" stroke="${INK}" stroke-width="1.3"/>` +
+        `<circle cx="5.5" cy="14.5" r="2.6" fill="#fbe08a" stroke="${INK}" stroke-width="1.6"/><circle cx="24" cy="8" r="2.8" fill="#fbe08a" stroke="${INK}" stroke-width="1.6"/><circle cx="42.5" cy="14.5" r="2.6" fill="#fbe08a" stroke="${INK}" stroke-width="1.6"/>`
+    ),
+
+  /** A slow, happy tortoise (the overall loser pile). */
+  tortoise: () =>
+    wrap48(
+      `<ellipse cx="24" cy="40.6" rx="18" ry="2.2" fill="${INK}" opacity=".16"/>` +
+        // feet, tail, head
+        `<path d="M11,33 V38.6 Q11,40 12.6,40 H16.4 Q18,40 18,38.6 V33 Z M28,33 V38.6 Q28,40 29.6,40 H33.4 Q35,40 35,38.6 V33 Z" fill="#9ccc6a" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>` +
+        `<path d="M7.5,31 L3.5,33 L7.8,34.4" fill="#9ccc6a" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>` +
+        `<path d="M36,30 C37,24 40,21.6 43.4,22.4 C46.6,23.2 47,28 44.6,30.4 C42.6,32.4 39,32.6 36.4,33 Z" fill="#9ccc6a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>` +
+        `<circle cx="42.6" cy="25.8" r="1.4" fill="#2a1a10"/><circle cx="43" cy="25.3" r=".5" fill="#fff"/>` +
+        `<path d="M41.6,29 Q43.4,30.2 45,28.8" fill="none" stroke="${INK}" stroke-width="1.3" stroke-linecap="round"/>` +
+        `<ellipse cx="40.4" cy="28.6" rx="1.5" ry="1" fill="#f28b82" opacity=".6"/>` +
+        // the shell
+        `<path d="M7,32 C7,19 15,12.5 22.5,12.5 C30,12.5 38,19 38,32 Z" fill="#4f9a3a" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>` +
+        `<path d="M16.5,31.5 L13.5,25 L18,18.5 H27 L31.5,25 L28.5,31.5 M18,18.5 L16,14.6 M27,18.5 L29,14.6 M13.5,25 H8 M31.5,25 H37" fill="none" stroke="#2f6f2a" stroke-width="1.8" stroke-linejoin="round"/>` +
+        `<path d="M18.8,20.6 H26.2 L29.4,25.4 L27,30 H18 L15.6,25.4 Z" fill="#78bf4c"/>` +
+        `<path d="M12,22 C13.6,18.4 16.4,15.8 19.6,14.6" fill="none" stroke="#a9db7c" stroke-width="2" stroke-linecap="round"/>` +
+        `<path d="M5.5,31.4 H39.5 Q40.6,31.4 40.6,32.6 Q40.6,34.4 38.8,34.4 H6.2 Q4.4,34.4 4.4,32.6 Q4.4,31.4 5.5,31.4 Z" fill="#c9e59a" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`
+    ),
+
+  /** Zara's crystal ball on its little golden stand (the fortune teller odds). */
+  crystalBall: () =>
+    wrap48(
+      `<path d="M14.5,36 H33.5 L37,43 H11 Z" fill="#d99a1e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>` +
+        `<path d="M16,33 H32 L33.5,37 H14.5 Z" fill="#f2b84b" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>` +
+        `<circle cx="24" cy="20" r="14" fill="#bfdcf7" stroke="${INK}" stroke-width="2.4"/>` +
+        `<path d="M24,6 A14,14 0 0 1 36.2,26.8 C30,30 22,29 17.6,24 C22.6,24.6 27.6,22 29.4,16.6 C30.6,12.6 28.6,8.6 24,6 Z" fill="#a88ae0" opacity=".55"/>` +
+        `<path d="M15.6,12.4 A10.5,10.5 0 0 1 22,8.8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>` +
+        `<circle cx="15.4" cy="16.6" r="1.4" fill="#fff"/>` +
+        `<path d="M27,17 l1,2.4 2.4,1 -2.4,1 -1,2.4 -1,-2.4 -2.4,-1 2.4,-1 Z" fill="#fff" stroke="${INK}" stroke-width=".9" stroke-linejoin="round"/>` +
+        `<path d="M41,6 l.9,2.2 2.2,.9 -2.2,.9 -.9,2.2 -.9,-2.2 -2.2,-.9 2.2,-.9 Z" fill="#fffbe0" stroke="${INK}" stroke-width=".9" stroke-linejoin="round"/>`
+    ),
+
+  /** A sleepy eye mask: "no peeking!" */
+  peek: () =>
+    wrap48(
+      `<path d="M5,21 C2.5,21.5 1.6,24 2.6,26 M43,21 C45.5,21.5 46.4,24 45.4,26" fill="none" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/>` +
+        `<path d="M5,22 C5,15.5 11,12.8 17,14 C20.5,14.7 22.4,16.6 24,16.6 C25.6,16.6 27.5,14.7 31,14 C37,12.8 43,15.5 43,22 C43,29.5 37.4,33 31.6,31.4 C28,30.4 26,28 24,28 C22,28 20,30.4 16.4,31.4 C10.6,33 5,29.5 5,22 Z" fill="#6a45a8" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>` +
+        `<path d="M8.6,19.4 C10.6,16.6 14,15.8 17,16.4" fill="none" stroke="#a88ae0" stroke-width="2" stroke-linecap="round"/>` +
+        `<path d="M10,22.4 Q14.5,27 19,22.4 M29,22.4 Q33.5,27 38,22.4" fill="none" stroke="#fff3d4" stroke-width="2.4" stroke-linecap="round"/>` +
+        `<path d="M11.6,25 l-1.6,2 M14.5,26.2 v2.4 M17.4,25 l1.6,2 M30.6,25 l-1.6,2 M33.5,26.2 v2.4 M36.4,25 l1.6,2" fill="none" stroke="#fff3d4" stroke-width="1.6" stroke-linecap="round"/>` +
+        `<path d="M36,6 h5 l-5,5 h5 M28,8.4 h3.4 l-3.4,3.4 h3.4" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`
+    ),
+
+  /** A striped bazaar tent with a pennant: your own online room. */
+  tent: () => {
+    const id = nextId('tnt');
+    const roof = 'M24,9 L42,36 H6 Z';
+    return wrap48(
+      `<defs><clipPath id="${id}"><path d="${roof}"/></clipPath></defs>` +
+        `<ellipse cx="24" cy="41.4" rx="19" ry="2" fill="${INK}" opacity=".16"/>` +
+        `<path d="${roof}" fill="#fff3d4"/>` +
+        `<g clip-path="url(#${id})" fill="#d05631"><path d="M24,9 L14,40 H8 Z M24,9 L28,40 H22 Z M24,9 L42,40 H36 Z"/></g>` +
+        `<path d="M24,22 C21,26 20,32 20.4,36 H27.6 C28,32 27,26 24,22 Z" fill="#5b3017" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>` +
+        `<path d="${roof}" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>` +
+        `<rect x="5" y="35.4" width="38" height="4" rx="2" fill="#a4552a" stroke="${INK}" stroke-width="2"/>` +
+        `<path d="M24,9.5 V3" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>` +
+        `<path d="M24.6,3 L32,5.2 L24.6,7.6 Z" fill="#2ec4c6" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`
+    );
+  },
+
+  /** A phone with the dice pyramid on its screen: rejoin a friend's room. */
+  phone: () =>
+    wrap48(
+      `<rect x="12" y="4" width="24" height="40" rx="5" fill="#2e2828" stroke="${INK}" stroke-width="2.4"/>` +
+        `<rect x="15" y="9" width="18" height="28" rx="2" fill="#7fd0f0"/>` +
+        `<path d="M24,15 L17.6,30 L25.2,31.2 Z" fill="#f4c96b"/><path d="M24,15 L25.2,31.2 L30.6,29.4 Z" fill="#d99a1e"/>` +
+        `<path d="M24,15 L17.6,30 L25.2,31.2 L30.6,29.4 Z M24,15 L25.2,31.2" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>` +
+        `<rect x="20" y="39.6" width="8" height="1.8" rx=".9" fill="#7d818c"/>` +
+        `<path d="M40,10 C42.6,12.6 42.6,17.4 40,20 M43.4,7 C47.4,11 47.4,19 43.4,23" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`
+    ),
+};
+
+/**
+ * A place medal: 1 = gold on a red ribbon, 2 = silver on a blue ribbon. viewBox 0 0 40 48.
+ */
+export function medalSVG(place = 1) {
+  const gold = place === 1;
+  const [face, shade, light] = gold ? ['#f2b84b', '#d99a1e', '#fbe08a'] : ['#c9ced6', '#9aa1ad', '#eef1f5'];
+  const [ribbonA, ribbonB] = gold ? ['#e0344f', '#b82640'] : ['#1a9fd6', '#127fb0'];
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48">` +
+    `<path d="M7,2 H16 L22.6,22 H13.6 Z" fill="${ribbonA}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>` +
+    `<path d="M33,2 H24 L17.4,22 H26.4 Z" fill="${ribbonB}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>` +
+    `<path d="M10.4,2 L16.4,20.4" stroke="#fff3d4" stroke-width="1.4" opacity=".6"/>` +
+    `<circle cx="20" cy="32" r="13" fill="${face}" stroke="${INK}" stroke-width="2.4"/>` +
+    `<path d="M20,19 A13,13 0 0 1 31.4,38.4 C27,41.6 20.4,42 15.6,39.6 C24.6,38.4 30,30.6 28,22.6 C26.6,20.6 23.4,19.4 20,19 Z" fill="${shade}" opacity=".6"/>` +
+    `<circle cx="20" cy="32" r="9.2" fill="none" stroke="${light}" stroke-width="1.8"/>` +
+    `<text x="20" y="37.6" text-anchor="middle" font-family="'Lilita One', 'Trebuchet MS', sans-serif" font-size="15.5" fill="${INK}">${place}</text>` +
+    `<path d="M12.6,26.4 A9,9 0 0 1 17,23" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".85"/>` +
+    `</svg>`
+  );
+}
+
 // ─── UI line icons (24×24, inherit currentColor) ─────────────────────────────
 
 const ICON_PATHS = {

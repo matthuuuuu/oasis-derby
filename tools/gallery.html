@@ -47,6 +47,15 @@
       <div class="row">${pile(['red', 'blue', 'yellow'])}${pile(['green', 'black', 'purple', 'white'], true)}${pile(['yellow', 'green'])}${pile(['blue', 'yellow', 'green', 'red', 'purple'])}</div>
       <h2>Badges</h2>
       <div class="row badge">${all.map((c) => `<div class="cell">${camels.camelBadgeSVG(c)}</div>`).join('')}</div>`;
+  } else if (show === 'stickers') {
+    // the little pictures that stand in for emoji, big and at the sizes the game uses
+    const t = await import('../js/art/tokens.js');
+    const sized = (svg, w, h = w) => svg.replace('<svg ', `<svg width="${w}" height="${h}" `);
+    const all = [...Object.entries(t.STICKERS).map(([k, f]) => [k, f()]), ['medal 1', t.medalSVG(1)], ['medal 2', t.medalSVG(2)], ['partner', t.ACTION_ICONS.partner()]];
+    out.innerHTML = `<h2>Stickers</h2>
+      <div class="row">${all.map(([k, s]) => `<div class="cell" style="width:120px">${sized(s, 110)}<span>${k}</span></div>`).join('')}</div>
+      <h2>Small (as used inline)</h2>
+      <div class="row">${all.map(([k, s]) => `<div class="cell" style="width:60px">${sized(s, 34)}${sized(s, 18)}</div>`).join('')}</div>`;
   } else if (show === 'tokens') {
     const t = await import('../js/art/tokens.js');
     const box = (svg, w, h = w) => `<div class="cell" style="width:${w}px"><div style="width:${w}px;height:${h}px">${svg.replace('<svg ', `<svg width="${w}" height="${h}" `)}</div></div>`;

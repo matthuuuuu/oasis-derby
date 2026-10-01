@@ -1,7 +1,7 @@
 // "How to play" — the rules in two minutes, with pictures.
 import { html, useState } from '../../vendor/preact-htm.js';
 import { ACTION_ICONS, pyramidSVG, loopArrowSVG } from '../art/tokens.js';
-import { Sheet, Raw, CamelSprite, Ticket, Die, SpectatorTile, Icon } from './common.js';
+import { Sheet, Raw, CamelSprite, Ticket, Die, SpectatorTile, Icon, Sticker } from './common.js';
 import { pileSlot, STACK_STYLE } from './stacking.js';
 import { isCrazy } from '../engine/constants.js';
 
@@ -95,9 +95,9 @@ const PAGES = [
   {
     title: 'The finish line',
     art: () => html`<div class="howto-art" style="align-items:center;gap:16px">
-      <span style="font-size:52px">🏆</span>
+      <${Sticker} name="trophy" size=${64} />
       <div style="width:120px"><${CamelSprite} camel="green" /></div>
-      <span style="font-size:52px">🏁</span>
+      <${Sticker} name="flag" size=${64} />
     </div>`,
     points: [
       html`The moment any camel crosses the finish line, the race ends. There's one last leg scoring.`,
@@ -107,9 +107,9 @@ const PAGES = [
   },
   {
     title: 'Crazier Camels mode',
-    art: () => html`<div class="howto-art" style="gap:12px;align-items:flex-end">
+    art: () => html`<div class="howto-art" style="gap:16px;align-items:center">
       <div class="crazy-pyramid howto-pyr"><${Raw} svg=${crazyPyramid} class="pyr" tag="div" /><${Die} die="grey" value=${3} shown="black" /></div>
-      <div style="width:58px;align-self:center"><${Raw} svg=${loop} /></div>
+      <div style="width:58px"><${Raw} svg=${loop} /></div>
       <div style=${flip}><${CamelSprite} camel="black" /></div>
     </div>`,
     points: [

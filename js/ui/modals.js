@@ -18,6 +18,7 @@ import {
   characterById,
   pyramidTicketIcon,
   Raw,
+  Sticker,
   copyText,
   toast,
 } from './common.js';
@@ -46,7 +47,7 @@ function ScoreRows({ result, state }) {
           ${pyr > 0 &&
           html`<span class="res-item"><span style="width:18px;display:inline-block"><${Raw} svg=${pyramidTicketIcon} /></span>×${pyr} <span class="plus">+${pyr}</span></span>`}
           ${r.bonus &&
-          html`<span class="res-item" title="Copied from partner">🤝 ${playerById(state, r.bonus.from)?.name}'s
+          html`<span class="res-item" title="Copied from partner"><${Sticker} name="partner" size=${16} /> ${playerById(state, r.bonus.from)?.name}'s
             ${r.bonus.kind === 'leg' ? html`<${MiniTicket} color=${r.bonus.color} value=${r.bonus.value} />` : 'pyramid ticket'}
             <span class="plus">+${r.bonus.reward}</span></span>`}
           ${!legItems.length && !pyr && !r.bonus && html`<span class="muted" style="font-size:13px;font-weight:700">no tickets this leg</span>`}
@@ -65,11 +66,11 @@ export function LegResultsSheet({ result, state, onClose, final = false }) {
     <div class="podium-mini">
       <div class="place">
         <${CamelSprite} camel=${result.first} />
-        <span>🥇 ${camelName(result.first)}</span>
+        <span><${Sticker} name="medal1" size=${18} /> ${camelName(result.first)}</span>
       </div>
       <div class="place second">
         <${CamelSprite} camel=${result.second} />
-        <span>🥈 ${camelName(result.second)}</span>
+        <span><${Sticker} name="medal2" size=${18} /> ${camelName(result.second)}</span>
       </div>
     </div>
     <${ScoreRows} result=${result} state=${state} />
@@ -136,7 +137,7 @@ export function FinaleSheet({ state, canRematch, onRematch, onLobby, onExit, onC
         const p = playerById(state, row.player);
         const win = f.winners.includes(row.player);
         return html`<div class=${`standing ${win ? 'win' : ''}`} style=${`animation-delay:${1 + i * 0.12}s`} key=${row.player}>
-          <span class="rank">${win ? '👑' : i + 1}</span>
+          <span class="rank">${win ? html`<${Sticker} name="crown" size=${22} />` : i + 1}</span>
           <${Avatar} character=${p.character} bot=${!!p.bot} />
           <span class="grow">${p.name}<br /><span class="muted" style="font-size:13px">${characterById(p.character).title}</span></span>
           <${Coins} n=${row.coins} />
@@ -163,7 +164,7 @@ export function FinishBetSheet({ state, me, initialPile = 'winner', needsGate, o
   if (!revealed) {
     return html`<${Sheet} title="Secret bet" onClose=${onClose}>
       <div class="gate">
-        <div class="peek">🙈</div>
+        <div class="peek"><${Sticker} name="peek" size=${64} /></div>
         <p style="font-weight:800;font-size:18px">Pass the device to <b>${me.name}</b>.</p>
         <p class="muted" style="font-weight:700">Everyone else — no peeking at the cards!</p>
         <button class="btn" onClick=${() => { sfx.tap(); setRevealed(true); }}>I'm ${me.name} — show my cards</button>
@@ -179,10 +180,10 @@ export function FinishBetSheet({ state, me, initialPile = 'winner', needsGate, o
   return html`<${Sheet} title="Bet on the whole race" subtitle="Your card stays face-down until the race ends" onClose=${onClose}>
     <div class="mode-grid">
       <button class="mode-card" aria-pressed=${pile === 'winner'} onClick=${() => setPile('winner')}>
-        <h3>🏆 Overall winner</h3><p>First across the finish</p><p class="pile-count">${sofar(state.winnerBets)}</p>
+        <h3><${Sticker} name="trophy" size=${24} /> Overall winner</h3><p>First across the finish</p><p class="pile-count">${sofar(state.winnerBets)}</p>
       </button>
       <button class="mode-card" aria-pressed=${pile === 'loser'} onClick=${() => setPile('loser')}>
-        <h3>🐢 Overall loser</h3><p>Furthest behind at the end</p><p class="pile-count">${sofar(state.loserBets)}</p>
+        <h3><${Sticker} name="tortoise" size=${24} /> Overall loser</h3><p>Furthest behind at the end</p><p class="pile-count">${sofar(state.loserBets)}</p>
       </button>
     </div>
     ${mine.length > 0 &&
@@ -236,7 +237,7 @@ export function PartnerSheet({ state, me, onConfirm, onClose }) {
     <p class="muted" style="font-size:13px;font-weight:700;margin-top:10px">They can't refuse! At the end of the leg each of you adds the reward of the partner's best ticket to your own. Partnerships end after leg scoring.</p>
     <div class="sheet-foot">
       <button class="btn ghost" onClick=${onClose}>Cancel</button>
-      <button class="btn" disabled=${!target} onClick=${() => onConfirm({ type: 'partner', target })}>Shake hands 🤝</button>
+      <button class="btn" disabled=${!target} onClick=${() => onConfirm({ type: 'partner', target })}>Shake hands <${Sticker} name="partner" size=${22} /></button>
     </div>
   </${Sheet}>`;
 }
@@ -265,7 +266,7 @@ export function MenuSheet({ session, onClose, onRules, onLeave }) {
       <${Switch} checked=${prefs.sound} label="Sound" onChange=${(v) => set({ sound: v })} />
     </div>
     <div class="switch-row">
-      <span class="grow">🔮 Fortune teller odds<small>Shows each camel's chances (great for learning)</small></span>
+      <span class="grow"><${Sticker} name="crystalBall" size=${20} /> Fortune teller odds<small>Shows each camel's chances (great for learning)</small></span>
       <${Switch} checked=${prefs.odds} label="Show odds" onChange=${(v) => set({ odds: v })} />
     </div>
     <div class="switch-row">

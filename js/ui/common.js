@@ -2,7 +2,7 @@
 import { html, useEffect, useMemo, useState, useRef } from '../../vendor/preact-htm.js';
 import { CHARACTERS, portraitSVG, pharaohMaskSVG, crowdSVG } from '../art/characters.js';
 import { camelSVG, camelBadgeSVG } from '../art/camels.js';
-import { coinSVG, icon, pyramidTicketSVG, pyramidSVG } from '../art/tokens.js';
+import { coinSVG, icon, pyramidTicketSVG, pyramidSVG, STICKERS, medalSVG, ACTION_ICONS } from '../art/tokens.js';
 import { CAMEL_LABELS } from '../engine/constants.js';
 import { getPrefs, setPrefs } from './prefs.js';
 import { sfx } from './fx.js';
@@ -13,6 +13,18 @@ export { html };
 export function Raw({ svg, class: cls = '', tag = 'span', style }) {
   const Tag = tag;
   return html`<${Tag} class=${cls} style=${style} dangerouslySetInnerHTML=${{ __html: svg }} />`;
+}
+
+const stickers = {};
+const stickerSVG = (name) =>
+  (stickers[name] ||= name === 'medal1' ? medalSVG(1) : name === 'medal2' ? medalSVG(2) : name === 'partner' ? ACTION_ICONS.partner() : STICKERS[name]());
+/**
+ * One of the little sticker pictures we use instead of emoji (trophy, flag, crown, tortoise,
+ * crystalBall, peek, tent, phone, medal1, medal2, partner), `size` px wide.
+ */
+export function Sticker({ name, size = 20, class: cls = '' }) {
+  const tall = name.startsWith('medal') ? 1.2 : 1;
+  return html`<${Raw} svg=${stickerSVG(name)} class=${`sticker ${cls}`} style=${`width:${size}px;height:${size * tall}px`} />`;
 }
 
 export function Icon({ name, size = 20 }) {

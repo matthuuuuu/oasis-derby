@@ -1,7 +1,7 @@
 // Home screen: who you are, and how you want to play.
 import { html, useEffect, useMemo, useRef, useState } from '../../vendor/preact-htm.js';
 import { logoSVG, ACTION_ICONS } from '../art/tokens.js';
-import { Raw, Icon, CharacterPicker, ThemeDots, toast, characterById } from './common.js';
+import { Raw, Icon, CharacterPicker, ThemeDots, Sticker, CamelSprite, toast, characterById } from './common.js';
 import { getPrefs, setPrefs } from './prefs.js';
 import { cleanCode } from '../net/online.js';
 import { sfx } from './fx.js';
@@ -27,7 +27,7 @@ export function Home({ initialCode = '', saved, busy, onHowTo, onLocal, onHost, 
   const profile = () => {
     const n = name.trim();
     if (!n) {
-      toast('Pick a display name first 🙂');
+      toast('Pick a display name first');
       nameRef.current?.focus();
       return null;
     }
@@ -70,7 +70,7 @@ export function Home({ initialCode = '', saved, busy, onHowTo, onLocal, onHost, 
 
     ${saved.map(
       (s) => html`<button class="card link-card" onClick=${() => onResume(s)} disabled=${busy}>
-        <span class="ico" style="font-size:34px;display:grid;place-items:center">${s.emoji}</span>
+        <span class="ico" style="display:grid;place-items:center">${s.art === 'camel' ? html`<${CamelSprite} camel="yellow" />` : html`<${Sticker} name=${s.art} size=${44} />`}</span>
         <span><h3>${s.title}</h3><p>${s.subtitle}</p></span>
         <span class="chev"><${Icon} name="arrowRight" /></span>
       </button>`

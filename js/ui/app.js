@@ -18,7 +18,7 @@ function resumables() {
     out.push({
       kind: 'local',
       data: local,
-      emoji: '🐪',
+      art: 'camel',
       title: 'Resume your race',
       subtitle: `Pass & play · leg ${local.state.leg} · ${local.state.players.length} riders`,
     });
@@ -28,14 +28,14 @@ function resumables() {
     out.push({
       kind: 'host',
       data: host,
-      emoji: '📡',
+      art: 'tent',
       title: `Reopen room ${host.code}`,
       subtitle: host.state ? `Online race in progress · leg ${host.state.leg}` : 'Your online room',
     });
   }
   const guest = loadJSON(GUEST_SAVE_KEY);
   if (guest?.code && Date.now() - guest.savedAt < 6 * HOURS) {
-    out.push({ kind: 'guest', data: guest, emoji: '📱', title: `Rejoin room ${guest.code}`, subtitle: 'Hop back into the race' });
+    out.push({ kind: 'guest', data: guest, art: 'phone', title: `Rejoin room ${guest.code}`, subtitle: 'Hop back into the race' });
   }
   return out;
 }
