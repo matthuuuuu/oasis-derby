@@ -4,13 +4,13 @@
 
 export const CHARACTERS = [
   { id: 'explorer', name: 'Ruby', title: 'The Archaeologist', color: '#7fd1c6' },
-  { id: 'aviator', name: 'Amira', title: 'The Aviator', color: '#8cc4f0' },
+  { id: 'aviator', name: 'Archie', title: 'The Aviator', color: '#8cc4f0' },
   { id: 'merchant', name: 'Omar', title: 'The Spice Merchant', color: '#f5b94f' },
   { id: 'camelmaster', name: 'Karim', title: 'The Professor', color: '#8fd39a' },
   { id: 'bookie', name: 'Bashir', title: 'The Bookmaker', color: '#cfd66a' },
   { id: 'mystic', name: 'Zara', title: 'The Fortune Teller', color: '#f5a38c' },
   { id: 'socialite', name: 'Clementine', title: 'The Socialite', color: '#eea6cf' },
-  { id: 'catkeeper', name: 'Nour', title: 'The Cat Keeper', color: '#b9a3e6' },
+  { id: 'catkeeper', name: 'Nour', title: 'The Historian', color: '#b9a3e6' },
 ];
 
 // ------------------------------------------------------------------ kit --
@@ -167,8 +167,8 @@ const ART = {
   },
 
   aviator() {
-    const skin = '#cf9366', cap = '#7a4a2c', capD = '#5f3820', capL = '#9a6441', strap = '#4a2c18';
-    const jacket = '#b06d3c', scarf = '#fffaf2', scarfD = '#e7ddcb', brass = '#e3a93c', hair = '#2e1f1a';
+    const skin = '#f3c9a1', cap = '#7a4a2c', capD = '#5f3820', capL = '#9a6441', strap = '#4a2c18';
+    const jacket = '#b06d3c', scarf = '#fffaf2', scarfD = '#e7ddcb', brass = '#e3a93c', hair = '#8a5a2b';
     const gog = (x, y) =>
       C(x, y, 9.4, brass) + C(x, y, 6.4, '#80dad1') +
       L(`M${x - 4} ${y + 0.6}Q${x - 3.8} ${y - 3.6} ${x + 0.2} ${y - 4.1}`, 1.9, '#fff') +
@@ -188,10 +188,11 @@ const ART = {
         cheeks(66.5, 15.5) +
         dotEyes(58.5) +
         L('M35.5 51.4Q40 49 44.5 51', 2.4, hair) + L('M55.5 50.6Q60 47.8 64.5 50', 2.4, hair) +
-        nose(skin, 50, 64.5) +
-        P('M41.5 67.5Q50 70 58.5 66Q57.5 76 49.5 76.5Q42.5 76.5 41.5 67.5Z', MOUTH, ' stroke-width="2"') +
-        S('M42.8 68.6Q50 70.9 57.3 67.2L57 69.6Q50 73 43.2 70.8Z', '#fff') +
-        S('M45.5 74.6Q50 72.6 54.5 74.2Q52.5 76.2 49.5 76.2Q47 76.2 45.5 74.6Z', TONGUE) +
+        nose(skin, 50, 63.6) +
+        openSmile(50, 70.4, 5, 5.2) +
+        // a dashing pilot's moustache
+        P('M50 66.4C47.4 64.8 43 64.9 40.6 66.7C39.2 67.7 37.6 67.3 37.4 65.9C36.8 68.9 39.2 70.9 42.6 70.1C45.6 69.5 48.2 68.6 50 68.6' +
+          'C51.8 68.6 54.4 69.5 57.4 70.1C60.8 70.9 63.2 68.9 62.6 65.9C62.4 67.3 60.8 67.7 59.4 66.7C57 64.9 52.6 64.8 50 66.4Z', hair, ' stroke-width="2"') +
         P('M44 43.5C47 42.4 52 42.4 55.5 44C52.8 44.8 50.8 46.3 49.8 48.8C48.6 46.3 46.6 44.6 44 43.5Z', hair) +
         sh('M22.5 53C20 30 32 16 50 16C68 16 80 30 77.5 53C73 47 63 42.5 50 42.5C37 42.5 27 47 22.5 53Z', cap,
           S('M30 34C32 25 39 20 46 19C40 23 35.5 28 34 35Z', capL) + L('M50 16.5V25', 1.4, capD)) +
@@ -232,24 +233,24 @@ const ART = {
   },
 
   camelmaster() {
-    const skin = '#b97a4f', red = '#e0344f', robe = '#8a5a34', thobe = '#f6f1e7', agal = '#2e2828';
-    const beard = '#aaa49c', beardD = '#7b756e', id = uid('kf');
-    const kef = 'M8 104C11 86 16 73 17 56C17 32 30 15 50 15C70 15 83 32 83 56C84 73 89 86 92 104H70C69 93 68 85 71 77C74 69 75 59 73 51C67 46 59 44 50 44C41 44 33 46 27 51C25 59 26 69 29 77C32 85 31 93 30 104Z';
-    let hz = '', vt = '';
-    for (let v = 1; v < 104; v += 6) {
-      hz += `M0 ${v}h100v2.6H0z`;
-      vt += `M${v} 0h2.6v104h-2.6z`;
-    }
+    // Karim the professor: mortarboard with a gold tassel, half-moon specs, academic gown and bow tie
+    const skin = '#b97a4f', gown = '#34303f', gownD = '#26232f', cap = '#2e2a38', capD = '#1f1c27', capL = '#4a4558';
+    const red = '#e0344f', redD = '#b82640', beard = '#aaa49c', beardD = '#7b756e', grey = '#e6e1d9', brow = '#9a948d';
+    const lens = (x) => `M${x - 6.2} 60H${x + 6.2}Q${x + 5.8} 66.2 ${x} 66.2Q${x - 5.8} 66.2 ${x - 6.2} 60Z`;
+    const wire = (d) => L(d, 3.4) + L(d, 1.6, GOLD);
     return inked(
-      `<defs><clipPath id="${id}"><path d="${kef}"/></clipPath></defs>` +
-        torso(robe) +
-        P('M38.5 83L50 104L61.5 83Z', thobe) + L('M38.8 84.5L47.6 104M61.2 84.5L52.4 104', 2.2, GOLD) +
+      torso(gown) +
+        sym(P('M30 88C33 93 34 99 34 104H24C24 97 26 92 30 88Z', gownD)) +
+        P('M39 83L50 99L61 83Z', WHITE) +
+        sym(P('M34.5 84.5L39 83L50 99V104H44.5Z', GOLD)) +
+        sym(P('M50 89.6L43.4 86V93.2Z', red, ' stroke-width="2"')) + E(50, 89.6, 2.1, 2.3, redD, ' stroke-width="1.8"') +
         neck(skin) +
+        ears(skin, 60) +
         head(skin) +
-        cheeks(65.5, 16) +
-        happyEyes(57.5) +
-        L('M33.6 56.2l-2.6-1.2M33.8 58.4l-2.6.6M66.4 56.2l2.6-1.2M66.2 58.4l2.6.6', 1.3) +
-        L('M34.5 51Q40 48.4 45 50.2', 3, '#8f8983') + L('M55 50.2Q60 48.4 65.5 51', 3, '#8f8983') +
+        cheeks(64.6, 18.8, 50, 3.6, 2.4) +
+        happyEyes(56.6) +
+        L('M33.2 55.4l-2.6-1.2M33.4 57.6l-2.6.6M66.8 55.4l2.6-1.2M66.6 57.6l2.6.6', 1.3) +
+        L('M34.5 49.8Q40 46.8 45 48.8', 3.4, brow) + L('M55 48.8Q60 46.8 65.5 49.8', 3.4, brow) +
         nose(skin, 50, 63.6, 2.6, 1.9) +
         sh('M27.5 60C26.5 75 37 86.5 50 86.5C63 86.5 73.5 75 72.5 60C70 67 64.5 70 58.5 69C55 71.5 45 71.5 41.5 69C35.5 70 30 67 27.5 60Z', beard,
           S('M31 72C35 80 42 84.5 50 84.8C58 84.5 65 80 69 72C66 78.5 58 83 50 83C42 83 34 78.5 31 72Z', beardD, ' opacity=".55"')) +
@@ -258,14 +259,21 @@ const ART = {
         dots([35.2, 71.6, 64.8, 71.6, 42.6, 82, 57.4, 82, 46.4, 76.4, 53.6, 76.4], 0.7, '#6f6962') +
         P('M45.5 70.6Q50 72 54.5 70.6Q53.5 75 50 75Q46.5 75 45.5 70.6Z', MOUTH, ' stroke-width="1.8"') +
         P('M40.5 67.5C43.5 64 47.5 64 50 65.8C52.5 64 56.5 64 59.5 67.5C56.5 70 52.5 69.5 50 68.4C47.5 69.5 43.5 70 40.5 67.5Z', beard, ' stroke-width="1.8"') +
-        `<g clip-path="url(#${id})"${NS}><rect width="100" height="104" fill="${CREAM}"/>` +
-        `<path d="${hz}" fill="${red}" opacity=".7"/><path d="${vt}" fill="${red}" opacity=".7"/>` +
-        `<path d="M17 56C19 74 24 88 26 104H8C11 86 16 73 17 56ZM83 56C81 74 76 88 74 104H92C89 86 84 73 83 56Z" fill="#6b0f22" opacity=".14"/></g>` +
-        L('M21 72C23 84 21 94 19 104M79 72C77 84 79 94 81 104M33 20Q27 27 25 36', 1.5) +
-        `<g clip-path="url(#${id})">` +
-        tube('M16 26Q50 38.2 84 26', agal, 3.6, 1.2) + tube('M14 33.8Q50 46 86 33.8', agal, 3.6, 1.2) +
-        L('M26 28.1Q50 34.1 74 28.1M24 35.7Q50 42.1 76 35.7', 0.9, '#716767') + '</g>' +
-        P(kef, 'none')
+        // fluffy white hair poking out under the cap
+        sym(P('M28.5 45.5C24 44.5 20.5 48 21.8 51.8C19.6 54.4 20.8 58.4 24.2 58.6C25 55 27.4 51.6 31.2 49.6Z', grey, ' stroke-width="2"')) +
+        // half-moon reading glasses
+        S(lens(40), '#fff', ' fill-opacity=".28"') + S(lens(60), '#fff', ' fill-opacity=".28"') +
+        wire(lens(40)) + wire(lens(60)) + wire('M46.2 60.6Q50 58.8 53.8 60.6') + wire('M33.8 60.6L26.4 58.6M66.2 60.6L73.6 58.6') +
+        // mortarboard
+        sh('M24 50C23.5 37 35 30 50 30C65 30 76.5 37 76 50C69 45.5 60 43.5 50 43.5C40 43.5 31 45.5 24 50Z', cap,
+          S('M31 37C35 33 41 31.2 46 31C41 33.5 37 36.5 34.5 40.5Z', capL)) +
+        P('M11 28L50 38L89 28V31.6L50 41.6L11 31.6Z', capD) +
+        sh('M11 28L50 17.5L89 28L50 38Z', cap, S('M11 28L50 17.5L57 19.4L19 30Z', capL, ' opacity=".7"')) +
+        tube('M50 27.8Q68 28.4 80.6 30.6C81.8 35 81.8 39.5 81.2 43.4', GOLD, 1.7, 1) +
+        C(50, 27.8, 2.4, GOLD, ' stroke-width="1.6"') +
+        P('M78.4 43.4H84L85.6 53.4Q81.2 55 76.8 53.4Z', GOLD, ' stroke-width="1.8"') +
+        L('M79.8 46.6L79.4 52.8M82.6 46.6L83 52.8', 1, GOLD_D) +
+        P('M78.2 42.2H84.2V45.4H78.2Z', GOLD_D, ' stroke-width="1.6"')
     );
   },
 
@@ -393,66 +401,50 @@ const ART = {
   },
 
   catkeeper() {
-    const skin = '#cf9366', hair = '#2a1f1a', hairL = '#4d3d33', dress = '#fff3d4', col = '#1a9fd6', rib = '#e0344f';
-    const cat = '#e8c98c', catD = '#d6b577', bib = '#f8ecd2', spot = '#a9844e', catEye = '#8cc63f', pink = '#f5a3a0';
-    const girl = (s) => G('translate(-1.5 0)', s);
-    const braid = (x, y0) => {
-      let s = '';
-      for (let i = 0; i < 4; i++) {
-        const y = r1(y0 + i * 5.3);
-        s += G(`rotate(${i % 2 ? 30 : -30} ${x} ${y})`,
-          E(x, y, 4.4, 3.2, hair) + L(`M${r1(x - 2.5)} ${r1(y - 0.5)}Q${x} ${r1(y - 2.4)} ${r1(x + 2.5)} ${r1(y - 0.5)}`, 1.1, hairL));
-      }
-      const yb = r1(y0 + 20.2);
-      const loop = `M${x} ${yb}C${x - 2} ${yb - 4.6} ${x - 7.4} ${yb - 4.8} ${x - 6.8} ${yb}C${x - 7.4} ${yb + 4.8} ${x - 2} ${yb + 4.6} ${x} ${yb}Z`;
-      return s + P(`M${x - 2.6} ${yb}Q${x} ${yb + 9} ${x + 2.6} ${yb}Z`, hair) +
-        sym(P(`M${x} ${yb}L${x - 3.4} ${yb + 6.4}L${x - 1.4} ${yb + 6}Z`, rib, ' stroke-width="1.6"') + P(loop, rib, ' stroke-width="1.8"'), x) +
-        C(x, yb, 1.9, rib, ' stroke-width="1.6"');
-    };
+    // Nour the historian: blonde Gibson-girl updo with a quill in the bun, high-collared blouse,
+    // cameo brooch and a well-loved history book
+    const skin = '#f7d6b8', hair = '#f0c454', hairD = '#d6a33a', hairL = '#fbe39a';
+    const coat = '#2f6475', coatD = '#244f5d', blouseD = '#eadfca', book = '#c0462f', bookD = '#963322';
     return inked(
-      girl(
-        torso(dress, 45, 84, 38) +
-          neck(skin, 45) +
-          sym(P('M45 82.5C40 81.5 34 82.5 31 85.5C32 91 38 92.5 44 90.5C45 88.5 45.5 85.5 45 82.5Z', col), 45) +
-          C(45, 95.5, 1.3, col, ' stroke-width="1.2"') +
-          braid(24, 65)
-      ) +
-        // the cat sits on her right shoulder, tail curled under its paws
-        sh('M66.5 88.5C65 80 67.5 71 75 67.5C82.5 64.5 89.5 68 91 76C92 81.5 91 86 89.5 88.5Z', cat,
-          S('M85 67.8C89 70 90.6 73 91 76C92 81.5 91 86 89.5 88.5H83C86 82 87 74 85 67.8Z', catD) +
-          S('M73 68.5C76 70.5 82 70.5 85 68C84.5 74 82 78.5 79 79.5C76 78.5 73.5 74 73 68.5Z', bib)) +
-        dots([69.5, 76, 71, 81.5, 87, 75, 88.5, 81, 85.5, 85, 68.6, 85.4], 1.3, spot) +
-        tube('M89.4 83C93 88.5 88.5 91.8 81 91.3C76 91 71.5 90.6 68.5 88.6', cat, 3.2, 1.2) +
-        tube('M71.6 90.4C70.4 89.9 69.4 89.3 68.5 88.6', spot, 3.2, 1.2) +
-        girl(braid(66, 64)) +
-        E(74, 86.4, 2.8, 3.2, cat) + E(80.4, 86.8, 2.8, 3.2, cat) +
-        L('M73 88.3v1.4M75 88.3v1.4M79.4 88.7v1.4M81.4 88.7v1.4', 0.9) +
-        girl(
-          ears(skin, 61, 45, 24.5) +
-            head(skin, 45, 35, 79, 25) +
-            cheeks(67, 15, 45, 4.4, 2.7) +
-            dotEyes(59.5, 9, 45, 3.4, 4.2) +
-            nose(skin, 45, 65.2, 2, 1.5) +
-            P('M39.5 69Q45 71.4 50.5 69Q49.5 76.4 45 76.4Q40.5 76.4 39.5 69Z', MOUTH, ' stroke-width="2"') +
-            S('M40.6 69.9Q45 71.8 49.4 69.9L49 72Q45 73.4 41 72Z', '#fff') +
-            S('M44.2 70.6H45.8V73.2H44.2Z', MOUTH) +
-            S('M42 74.8Q45 72.8 48 74.8Q46.6 76.2 45 76.2Q43.4 76.2 42 74.8Z', TONGUE) +
-            P('M19.5 62C17 43 28 31.5 45 31.5C62 31.5 73 43 70.5 62C68.5 55 66 50.5 62 47.5C57 48.5 50 47 45 41.5C40 47 33 48.5 28 47.5C24 50.5 21.5 55 19.5 62Z', hair) +
-            S('M28 40C31.5 36 36.5 34.5 40.5 35C36.5 36.5 33 39 30.5 42.5Z', hairL)
-        ) +
-        // the cat's head, leaning towards her
-        G('rotate(-8 79.5 60)',
-          sym(P('M69.8 49L69 32.8L77.8 43.2Z', cat) + S('M71.3 45.8L70.8 37L75.8 43.4Z', pink), 79.5) +
-          P(headPath(79.5, 41.5, 66, 12.6, 0.62), cat) +
-          L('M77.5 45l.5 3.2M79.5 44.5v3.6M81.5 45l-.5 3.2', 1.1, spot) +
-          L('M72.2 55Q70.4 55.6 69.2 54.6M86.8 55Q88.6 55.6 89.8 54.6', 1, spot) +
-          sym(E(75.2, 54, 2.5, 2.8, catEye, ' stroke-width="1.3"') + E(75.2, 54.3, 0.9, 2.1, EYE, NS) + C(76, 53.1, 0.7, '#fff', NS), 79.5) +
-          cheeks(58.8, 6.4, 79.5, 2.1, 1.2) +
-          P('M77.9 57.4H81.1L79.5 59.2Z', pink, ' stroke-width="1.2"') +
-          L('M77.5 60.4Q78.5 61.4 79.5 60.2Q80.5 61.4 81.5 60.4', 1.2) +
-          L('M72.5 59.2l-5-1M72.5 61.2l-5 .5M86.5 59.2l5-1M86.5 61.2l5 .5', 0.9) +
-          P('M70 64.4Q79.5 69.4 89 64.4L89 67.7Q79.5 72.7 70 67.7Z', GOLD, ' stroke-width="1.8"') +
-          C(79.5, 71.6, 1.9, GOLD_D, ' stroke-width="1.5"'))
+      // quill through the bun (drawn first so the bun sits in front of its shaft)
+      G('rotate(38 50 21)',
+        sh('M50 -3C55.5 2 56.5 10 53.5 17.5L50 20L46.5 17.5C43.5 10 44.5 2 50 -3Z', WHITE,
+          S('M50 -3C55.5 2 56.5 10 53.5 17.5L50 20Z', '#e7ddcb')) +
+        L('M50 -1.5V34', 1.3) + L('M47 8.5L45.4 7.4M53 6.8L54.8 5.6', 1.1) +
+        P('M48.8 31.6H51.2L50 37Z', '#2e2828', ' stroke-width="1.4"')) +
+      sh('M40.5 21C40.5 15.5 45 11.5 50 11.5C55 11.5 59.5 15.5 59.5 21C59.5 26.5 55 30.5 50 30.5C45 30.5 40.5 26.5 40.5 21Z', hair,
+        S('M54 12.4C57.5 14 59.5 17.5 59.5 21C59.5 26.5 55 30.5 50 30.5C54.5 27 56.5 20 54 12.4Z', hairD)) +
+        L('M45 19.5Q50 15.5 55 19.5Q53.6 24.6 48.6 23.6', 1.3, hairD) +
+        // the pouf of hair behind the head
+        P('M20 61C12 43 26 25.5 50 25.5C74 25.5 88 43 80 61Z', hair) +
+        torso(coat) +
+        sym(P('M36.5 83L46.5 100L41 104H30.5C28.5 95.5 30.5 88 36.5 83Z', coatD)) +
+        P('M38.5 83L50 99L61.5 83Z', WHITE) +
+        L('M44.5 90Q50 93 55.5 90M46.5 94.6Q50 96.6 53.5 94.6', 1.2, blouseD) +
+        neck(skin) +
+        P('M41.5 75V85Q50 89.5 58.5 85V75Q50 79 41.5 75Z', WHITE) +
+        L('M42 81.6Q50 85.6 58 81.6', 1.1, blouseD) +
+        E(50, 88, 3.4, 4.1, GOLD, ' stroke-width="1.6"') + E(50, 88, 2.1, 2.8, '#e8836f', NS) + E(50, 87.3, 1, 1.3, WHITE, NS) +
+        ears(skin, 61) +
+        C(24.3, 67.6, 1.9, WHITE, ' stroke-width="1.4"') + C(75.7, 67.6, 1.9, WHITE, ' stroke-width="1.4"') +
+        head(skin) +
+        cheeks(66.8, 16) +
+        dotEyes(59, 10, 50, 3.1, 3.9) +
+        L('M36.6 56.8l-2.6-1.8M35.8 58.8l-2.8-.6M63.4 56.8l2.6-1.8M64.2 58.8l2.8-.6', 1.4, EYE) +
+        L('M35.5 52.4Q40 50.4 44.5 51.8', 1.9, hairD) + L('M55.5 51.8Q60 50.4 64.5 52.4', 1.9, hairD) +
+        nose(skin, 50, 64.8) +
+        openSmile(50, 69.4, 4.8, 5.2) +
+        // swept-up front of the hair
+        sh('M23.5 58C15 43 27 29 50 29C73 29 85 43 76.5 58C75 51 71.5 46 66 43.4C61 41.6 57 41.8 53.6 40.6Q50 39.4 46.4 40.6C43 41.8 39 41.6 34 43.4C28.5 46 25 51 23.5 58Z', hair,
+          S('M61 30.6C73 33.5 82 43 76.5 58C75.5 53.5 74 50 71.6 47.6C72 40.5 68 34.5 61 30.6Z', hairD) +
+          S('M27.5 43C30.5 36.5 37.5 32 45 31C39 34 34.5 38 31.8 43.6Z', hairL)) +
+        L('M30 47.5Q33.5 39.5 44 37M70 47.5Q66.5 39.5 56 37', 1.2, hairD) +
+        // her favourite history book, a little pyramid on the cover
+        G('rotate(-12 70 93) translate(-3 0)',
+          P('M79 81.5H81.8V104H79Z', CREAM, ' stroke-width="2"') +
+          sh('M60 80H79V104H60Z', book, S('M60 80H63.6V104H60Z', bookD)) +
+          L('M60 85H63.6M60 99H63.6', 1.2, GOLD) +
+          P('M71.4 85.4L76 93H66.8Z', GOLD, ' stroke-width="1.5"') + L('M67 96.2H75.8', 1.4, GOLD))
     );
   },
 };

@@ -27,7 +27,7 @@
 
   const names = [
     ['Sam', 'merchant'], ['Ruby', 'explorer', 'clever'], ['Karim', 'camelmaster', 'clever'], ['Zara', 'mystic', 'easy'],
-    ['Amira', 'aviator', 'clever'], ['Bashir', 'bookie', 'clever'], ['Clementine', 'socialite', 'easy'], ['Nour', 'catkeeper', 'clever'],
+    ['Archie', 'aviator', 'clever'], ['Bashir', 'bookie', 'clever'], ['Clementine', 'socialite', 'easy'], ['Nour', 'catkeeper', 'clever'],
   ];
   const players = (n) => names.slice(0, n).map(([name, character, bot], i) => ({ id: `p${i}`, name, character, bot: bot || null }));
 
@@ -91,14 +91,14 @@
   }
   if (c === 'botpick') {
     // Ruby (a bot) makes a move that arrives `at` ms after load, so a screenshot taken
-    // just after it shows the "hover" on what she picked:  &kind=legBet|roll|tile|finishBet
+    // just after it shows the "hover" on what she picked:  &kind=legBet|roll|tile[&space=N]|finishBet
     const kind = q.get('kind') || 'legBet';
     const s = midGame(4);
     s.turn = 1;
     const moves = {
       legBet: { type: 'legBet', color: 'red' },
       roll: { type: 'roll' },
-      tile: { type: 'tile', space: 13, side: 'cheer' },
+      tile: { type: 'tile', space: Number(q.get('space') || 13), side: 'cheer' },
       finishBet: { type: 'finishBet', pile: 'winner', color: 'blue' },
     };
     const { state: next, events } = applyAction(s, 'p1', moves[kind]);

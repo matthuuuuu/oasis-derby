@@ -325,7 +325,7 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
 
       ${Object.entries(view.tiles).map(([space, t]) => {
         const owner = tileOwner(t.owner);
-        return html`<div key=${`tile-${t.owner}`} class=${`board-tile ${flash === Number(space) ? 'flash' : ''}`} style=${cellStyle(Number(space))}>
+        return html`<div key=${`tile-${t.owner}`} class=${`board-tile ${flash === Number(space) ? 'flash' : ''} ${picked === Number(space) ? 'on-picked' : ''}`} style=${cellStyle(Number(space))}>
           <${SpectatorTile} side=${t.side} character=${owner?.character} />
         </div>`;
       })}

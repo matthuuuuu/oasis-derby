@@ -409,11 +409,17 @@ p {
   color: var(--muted);
   margin-right: 1px;
 }
+/* a plain circle, two colours split by one 45° line, with a solid ink outline */
 .theme-dot {
+  --a: #fff3d4;
+  --b: #f2b84b;
   width: 30px;
   height: 30px;
+  padding: 0;
   border-radius: 50%;
-  border: 3px solid var(--line-strong);
+  border: 2px solid #3b2412;
+  background: linear-gradient(135deg, var(--a) calc(50% - 0.5px), var(--b) calc(50% + 0.5px)) border-box;
+  background-clip: padding-box;
   position: relative;
   transition: transform 0.15s;
 }
@@ -421,17 +427,15 @@ p {
   transform: scale(1.08);
 }
 .theme-dot[aria-pressed='true'] {
-  border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--accent);
 }
-.theme-dot.sand {
-  background: linear-gradient(135deg, #fff3d4 50%, #f2b84b 50%);
-}
 .theme-dot.sunset {
-  background: linear-gradient(135deg, #f0795b 50%, #3a1d1a 50%);
+  --a: #f0795b;
+  --b: #3a1d1a;
 }
 .theme-dot.night {
-  background: linear-gradient(135deg, #23305e 50%, #f2c14e 50%);
+  --a: #23305e;
+  --b: #f2c14e;
 }
 
 /* ---------- Cards ---------- */
@@ -1259,13 +1263,17 @@ p {
   letter-spacing: 0.1em;
   color: color-mix(in srgb, #7a4a24 60%, transparent);
 }
+/* pickable squares sit above their dimmed neighbours so the whole ring shows */
 .track-cell.pickable {
+  z-index: 1;
   box-shadow:
     inset 0 -4px 0 color-mix(in srgb, var(--cell-edge) 60%, transparent),
     0 0 0 3px var(--teal),
     0 0 18px color-mix(in srgb, var(--teal) 70%, transparent);
 }
+/* the selected square comes right to the front: above other squares, the finish line and camels */
 .track-cell.picked {
+  z-index: 5;
   box-shadow:
     inset 0 -4px 0 color-mix(in srgb, var(--cell-edge) 60%, transparent),
     0 0 0 4px var(--accent-2),
@@ -1537,6 +1545,11 @@ p {
 }
 .board-tile .stile {
   width: 84%;
+}
+/* your own tile stays on top of its square while that square is selected (flipping it) */
+.board-tile.on-picked {
+  z-index: 6;
+  transform: scale(1.05);
 }
 .board-tile.flash .stile {
   animation: tile-flash 0.6s ease-out;
