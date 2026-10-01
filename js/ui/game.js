@@ -93,7 +93,7 @@ export function GameScreen({ session, onExit, onLobby }) {
         case 'roll': {
           sfx.shake();
           if (e.side) {
-            // Crazier Camels: the grey die is rolled on its stand beside the pyramid
+            // Crazier Camels: the grey die is rolled by the little black-and-white pyramid
             board.current?.shakeSide();
             await wait(fast ? 220 : 420);
             setView((v) => ({ ...v, crazy: { value: e.value, shown: e.shown, popping: true } }));

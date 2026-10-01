@@ -1,12 +1,12 @@
 // "How to play" — the rules in two minutes, with pictures.
 import { html, useState } from '../../vendor/preact-htm.js';
-import { ACTION_ICONS, crazyStandSVG, loopArrowSVG } from '../art/tokens.js';
+import { ACTION_ICONS, pyramidSVG, loopArrowSVG } from '../art/tokens.js';
 import { Sheet, Raw, CamelSprite, Ticket, Die, SpectatorTile, Icon } from './common.js';
 import { pileSlot, STACK_STYLE } from './stacking.js';
 import { isCrazy } from '../engine/constants.js';
 
 const icons = Object.fromEntries(Object.entries(ACTION_ICONS).map(([k, f]) => [k, f()]));
-const stand = crazyStandSVG();
+const crazyPyramid = pyramidSVG('crazy');
 const loop = loopArrowSVG();
 
 const flip = 'transform:scaleX(-1);width:86px';
@@ -108,13 +108,13 @@ const PAGES = [
   {
     title: 'Crazier Camels mode',
     art: () => html`<div class="howto-art" style="gap:12px;align-items:flex-end">
-      <div class="crazy-stand howto-stand"><${Raw} svg=${stand} class="stand" tag="div" /><${Die} die="grey" value=${3} shown="black" /></div>
+      <div class="crazy-pyramid howto-pyr"><${Raw} svg=${crazyPyramid} class="pyr" tag="div" /><${Die} die="grey" value=${3} shown="black" /></div>
       <div style="width:58px;align-self:center"><${Raw} svg=${loop} /></div>
       <div style=${flip}><${CamelSprite} camel="black" /></div>
     </div>`,
     points: [
       html`Everything is the same as the classic race, except for the crazy camels.`,
-      html`The <b>grey die</b> isn't in the pyramid. It waits on its stand beside it, and is rolled <b>right after every coloured die</b>, so a crazy camel moves on <b>every</b> pyramid roll.`,
+      html`The <b>grey die</b> isn't in the big pyramid. It has its own little <b>black-and-white pyramid</b>, and is rolled <b>right after every coloured die</b>, so a crazy camel moves on <b>every</b> pyramid roll.`,
       html`A leg still ends after 5 rolls, so this time <b>all five</b> coloured dice come out.`,
       html`Crazy camels never leave the board: passing space <b>1</b> they <b>loop round to 16</b> and keep going. Any racing camels they carry that far <b>hop off on space 1</b>.`,
     ],

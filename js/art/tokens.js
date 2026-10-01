@@ -3,8 +3,19 @@ const INK = '#3b2412';
 let uid = 0;
 const nextId = (p) => `${p}${++uid}`;
 
-/** The golden dice pyramid in the middle of the board. viewBox 0 0 120 100. */
-export function pyramidSVG() {
+/** Pyramid colours: the golden dice pyramid, and Crazier Camels' little black-and-white one. */
+const PYRAMID_LOOKS = {
+  gold: { lit: '#f4c96b', shade: '#d9993f', capLit: '#fff0a8', capShade: '#f2b84b', door: '#6b3a1c', doorIn: '#3a1d0c', shadeLine: INK, shadeLineOp: '.35' },
+  crazy: { lit: '#fbf8f1', shade: '#3a3436', capLit: '#ffffff', capShade: '#9a9ea6', door: '#6e6a70', doorIn: '#1f1b1d', shadeLine: '#ffffff', shadeLineOp: '.22' },
+};
+
+/**
+ * The dice pyramid in the middle of the board. viewBox 0 0 120 100.
+ * look 'crazy': Crazier Camels' small pyramid (white lit face, black shaded face, grey capstone
+ * like the grey die it rolls).
+ */
+export function pyramidSVG(look = 'gold') {
+  const c = PYRAMID_LOOKS[look] || PYRAMID_LOOKS.gold;
   const lines = [];
   // brick courses on the lit (left) face and the shaded (right) face
   for (let i = 1; i <= 6; i++) {
@@ -14,7 +25,9 @@ export function pyramidSVG() {
     const fx = 60 + t * 6;
     const rx = 60 + t * 50;
     const ry = 10 + t * 74;
-    lines.push(`<path d="M${lx.toFixed(1)},${y.toFixed(1)} L${fx.toFixed(1)},${(10 + t * 84).toFixed(1)} L${rx.toFixed(1)},${ry.toFixed(1)}" stroke="${INK}" stroke-width="1.2" fill="none" opacity=".35"/>`);
+    const fy = (10 + t * 84).toFixed(1);
+    lines.push(`<path d="M${lx.toFixed(1)},${y.toFixed(1)} L${fx.toFixed(1)},${fy}" stroke="${INK}" stroke-width="1.2" fill="none" opacity=".35"/>`);
+    lines.push(`<path d="M${fx.toFixed(1)},${fy} L${rx.toFixed(1)},${ry.toFixed(1)}" stroke="${c.shadeLine}" stroke-width="1.2" fill="none" opacity="${c.shadeLineOp}"/>`);
   }
   // vertical brick joints, staggered
   const joints = [];
@@ -34,16 +47,16 @@ export function pyramidSVG() {
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100">` +
     `<ellipse cx="62" cy="93" rx="54" ry="6" fill="${INK}" opacity=".18"/>` +
-    `<path d="M60,10 L8,90 L66,94 Z" fill="#f4c96b"/>` +
-    `<path d="M60,10 L66,94 L110,84 Z" fill="#d9993f"/>` +
+    `<path d="M60,10 L8,90 L66,94 Z" fill="${c.lit}"/>` +
+    `<path d="M60,10 L66,94 L110,84 Z" fill="${c.shade}"/>` +
     lines.join('') +
     joints.join('') +
     // capstone
-    `<path d="M60,10 L52,22.5 L61,23.3 Z" fill="#fff0a8"/>` +
-    `<path d="M60,10 L61,23.3 L67.5,22 Z" fill="#f2b84b"/>` +
+    `<path d="M60,10 L52,22.5 L61,23.3 Z" fill="${c.capLit}"/>` +
+    `<path d="M60,10 L61,23.3 L67.5,22 Z" fill="${c.capShade}"/>` +
     // door where the dice pop out
-    `<path d="M36,90.2 L36,79 C36,74.5 39.5,71.5 43.2,71.5 C47,71.5 50.4,74.5 50.4,79 L50.4,91.3 Z" fill="#6b3a1c" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>` +
-    `<path d="M38.8,90.4 L38.8,80 C38.8,77 40.8,75 43.2,75 C45.6,75 47.6,77 47.6,80 L47.6,91" fill="#3a1d0c"/>` +
+    `<path d="M36,90.2 L36,79 C36,74.5 39.5,71.5 43.2,71.5 C47,71.5 50.4,74.5 50.4,79 L50.4,91.3 Z" fill="${c.door}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>` +
+    `<path d="M38.8,90.4 L38.8,80 C38.8,77 40.8,75 43.2,75 C45.6,75 47.6,77 47.6,80 L47.6,91" fill="${c.doorIn}"/>` +
     // outline
     `<path d="M60,10 L8,90 L66,94 L110,84 Z M60,10 L66,94" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>` +
     // sparkle
@@ -98,29 +111,6 @@ export function hutFrontSVG() {
     `<path d="${outline} Z" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>` +
     `<circle cx="24" cy="2" r="1.6" fill="#f2b84b" stroke="${INK}" stroke-width="1"/>` +
     `<rect x="0.6" y="2.6" width="46.8" height="4" rx="2" fill="#a4552a" stroke="${INK}" stroke-width="1.6"/>` +
-    `</svg>`
-  );
-}
-
-/**
- * Crazier Camels: the stand beside the pyramid where the grey die sits and gets
- * rolled after every coloured die. A little sandstone plinth with a looping arrow
- * carved in its face. The die itself is drawn on top in HTML. viewBox 0 0 60 36.
- */
-export function crazyStandSVG() {
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 36">` +
-    `<ellipse cx="30" cy="33.6" rx="27" ry="2.4" fill="${INK}" opacity=".18"/>` +
-    // front face, with a darker foot
-    `<path d="M5,13 H55 V29 Q55,32 52,32 H8 Q5,32 5,29 Z" fill="#c9cbd2"/>` +
-    `<path d="M5.8,27.2 H54.2 V29 Q54.2,31.2 52,31.2 H8 Q5.8,31.2 5.8,29 Z" fill="#9fa3ad" opacity=".7"/>` +
-    // lit top face
-    `<path d="M5,13 L10,6 H50 L55,13 Z" fill="#e6e8ee"/>` +
-    // carved loop arrow (the crazy camels go round and round)
-    `<path d="M34.6,25.6 A6.2,6.2 0 1 0 25.4,25.6" fill="none" stroke="#7d818c" stroke-width="2.2" stroke-linecap="round"/>` +
-    `<path d="M23.2,22.9 L25.6,26.6 L28.6,23.8" fill="none" stroke="#7d818c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>` +
-    // outline
-    `<path d="M5,13 L10,6 H50 L55,13 V29 Q55,32 52,32 H8 Q5,32 5,29 Z M5,13 H55" fill="none" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>` +
     `</svg>`
   );
 }

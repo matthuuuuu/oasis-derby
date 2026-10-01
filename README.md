@@ -21,7 +21,8 @@ school project that follows the rules of the board game **Camel Up (2nd edition)
 This copy of the game adds a second game mode, picked on the "Set up the race" screen
 (and by the host in an online room). Everything is the classic race except:
 
-- The **grey die is not in the pyramid**. It sits on a stone stand beside it and is rolled
+- The **grey die is not in the pyramid**. It has its own small black-and-white pyramid (where the
+  right palm stands in the classic game) and is rolled
   **right after every coloured die**, so a crazy camel moves on every pyramid roll.
   A leg still ends after 5 rolls, so all five coloured dice come out each leg.
 - **Crazy camels loop**: passing space 1 they come round to 16 and keep going. Racing camels

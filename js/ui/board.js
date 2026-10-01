@@ -5,7 +5,7 @@ import { ALL_CAMELS, isCrazy, CAMEL_LABELS } from '../engine/constants.js';
 import { rankStacks } from '../engine/game.js';
 import { camelSVG } from '../art/camels.js';
 import { oasisSVG } from '../art/scenery.js';
-import { pyramidSVG, hutSVG, hutFrontSVG, crazyStandSVG, loopArrowSVG, icon } from '../art/tokens.js';
+import { pyramidSVG, hutSVG, hutFrontSVG, loopArrowSVG, icon } from '../art/tokens.js';
 import { Raw, Die, SpectatorTile } from './common.js';
 import { sfx } from './fx.js';
 import { getPrefs } from './prefs.js';
@@ -134,11 +134,12 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
   const [shaking, setShaking] = useState(false);
   const [sideShaking, setSideShaking] = useState(false);
 
-  const oasis = useMemo(() => oasisSVG(theme), [theme]);
+  const crazier = view.mode === 'crazier';
+  const oasis = useMemo(() => oasisSVG(theme, { rightPalm: !crazier }), [theme, crazier]);
   const pyramid = useMemo(() => pyramidSVG(), []);
   const hutBack = useMemo(() => hutSVG(), []);
   const hutFront = useMemo(() => hutFrontSVG(), []);
-  const stand = useMemo(() => crazyStandSVG(), []);
+  const crazyPyramid = useMemo(() => pyramidSVG('crazy'), []);
   const loopArrow = useMemo(() => loopArrowSVG(), []);
   const sprites = useMemo(
     () =>
@@ -324,9 +325,9 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
         >
           <${Raw} svg=${pyramid} />
         </button>
-        ${view.mode === 'crazier' &&
-        html`<div class=${`crazy-stand ${sideShaking ? 'shaking' : ''}`} title="The grey die: rolled after every coloured die">
-          <${Raw} svg=${stand} class="stand" tag="div" />
+        ${crazier &&
+        html`<div class=${`crazy-pyramid ${sideShaking ? 'shaking' : ''}`} title="The crazy camels' pyramid: its grey die is rolled after every coloured die">
+          <${Raw} svg=${crazyPyramid} class="pyr" tag="div" />
           ${view.crazy
             ? html`<${Die} key=${`grey-${view.rolled.length}`} die="grey" value=${view.crazy.value} shown=${view.crazy.shown} popping=${view.crazy.popping} />`
             : html`<div class="die c-grey resting" aria-label="grey die, not rolled yet this leg"><span></span></div>`}

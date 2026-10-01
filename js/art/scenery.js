@@ -2052,6 +2052,8 @@ function hedgePlantDefs(P, id, defs, hedgeG) {
 /**
  * The board centrepiece. `opts.plants` picks a hedge planting option ('A'–'E'); without it the
  * default planting is drawn (what the game uses).
+ * `opts.rightPalm === false` leaves out the right-hand palm and its reflection (Crazier Camels
+ * stands its little black-and-white pyramid there instead).
  */
 export function oasisSVG(theme = 'sand', opts = {}) {
   const P = palette(theme);
@@ -2128,7 +2130,8 @@ export function oasisSVG(theme = 'sand', opts = {}) {
   const pool = id('pool');
   defs.push(`<path id="${pool}" d="${poolD}"/><clipPath id="${clip}"><use href="#${pool}"/></clipPath>` + lin(wg, 0, 100, 0, 205, P.water));
   s += `<g clip-path="url(#${clip})"><rect x="0" y="90" width="300" height="130" fill="${P.waterDeep}"/><use href="#${pool}" transform="translate(0 7)" fill="url(#${wg})"/>`;
-  s += `<g fill="${P.waterDeep}" opacity=".3"><use href="#${cr.sil}" transform="translate(36 166) scale(.5 -.28)"/><use href="#${cr.sil}" transform="translate(264 166) scale(-.5 -.28)"/></g>`;
+  const rightPalm = opts.rightPalm !== false;
+  s += `<g fill="${P.waterDeep}" opacity=".3"><use href="#${cr.sil}" transform="translate(36 166) scale(.5 -.28)"/>${rightPalm ? `<use href="#${cr.sil}" transform="translate(264 166) scale(-.5 -.28)"/>` : ''}</g>`;
   // (at night the pale-gold waterHi dashes double as moonlight glitter)
   s += `<path d="${L.ripples[0]}" stroke="${P.waterLine}" stroke-width="2.4" opacity=".8"/><path d="${L.ripples[1]}" stroke="${P.waterHi}" stroke-width="2.4"/>`;
   const [dx, dyk, dk2] = L.duck;
@@ -2153,7 +2156,7 @@ export function oasisSVG(theme = 'sand', opts = {}) {
     `<ellipse cx="${x}" cy="${y + 1}" rx="17" ry="5.5" fill="${T('#f9dc98')}" stroke="${T('#e3a868')}" stroke-width="1.6"/>` +
     `<g fill="${T('#b77a48')}" stroke="${ink}" stroke-width="1.6"><ellipse cx="${x - 9}" cy="${y - 0.5}" rx="4.8" ry="3.4"/><ellipse cx="${x + 9}" cy="${y - 0.5}" rx="4.8" ry="3.4"/></g>`;
   s += foot(16, 108) + palm(P, crown, 16, 108, 30, 44, -3, 0.5, 1, 8) + put(gt, 5, 111, 0.45) + put(gt, 29, 112, 0.38, -1);
-  s += foot(284, 108) + palm(P, crown, 284, 108, 270, 44, 3, 0.5, -1, -8) + put(gt, 295, 111, 0.45, -1) + put(gt, 271, 112, 0.38);
+  if (rightPalm) s += foot(284, 108) + palm(P, crown, 284, 108, 270, 44, 3, 0.5, -1, -8) + put(gt, 295, 111, 0.45, -1) + put(gt, 271, 112, 0.38);
   s += critters(P, P.night ? L.fireflies : [L.dragonfly]);
   // 7) the tan pool rim on top of everything (only the app's dice pyramid sits in front of it)…
   s += `<path d="${bankD}${poolD}" fill="${T('#e0a062')}" fill-rule="evenodd" stroke="${ink}" stroke-width="2.5"/>`;
