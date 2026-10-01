@@ -3,14 +3,15 @@
 // docs/ART_STYLE.md. Pure functions only: no DOM access at import time.
 
 export const CHARACTERS = [
+  // (ids are kept from earlier versions so saved games and online rooms keep working)
   { id: 'explorer', name: 'Ruby', title: 'The Archaeologist', color: '#7fd1c6' },
-  { id: 'aviator', name: 'Archie', title: 'The Aviator', color: '#8cc4f0' },
   { id: 'merchant', name: 'Omar', title: 'The Spice Merchant', color: '#f5b94f' },
-  { id: 'camelmaster', name: 'Karim', title: 'The Professor', color: '#8fd39a' },
   { id: 'bookie', name: 'Bashir', title: 'The Bookmaker', color: '#cfd66a' },
   { id: 'mystic', name: 'Zara', title: 'The Fortune Teller', color: '#f5a38c' },
+  { id: 'aviator', name: 'Archie', title: 'The Aviator', color: '#8cc4f0' },
+  { id: 'camelmaster', name: 'Karim', title: 'The Professor', color: '#8fd39a' },
   { id: 'socialite', name: 'Clementine', title: 'The Socialite', color: '#eea6cf' },
-  { id: 'catkeeper', name: 'Nour', title: 'The Historian', color: '#b9a3e6' },
+  { id: 'catkeeper', name: 'Charlotte', title: 'The Historian', color: '#b9a3e6' },
 ];
 
 // ------------------------------------------------------------------ kit --
@@ -401,22 +402,16 @@ const ART = {
   },
 
   catkeeper() {
-    // Nour the historian: blonde Gibson-girl updo with a quill in the bun, high-collared blouse,
+    // Charlotte the historian: blonde ponytail tied with a ribbon, high-collared blouse,
     // cameo brooch and a well-loved history book
-    const skin = '#f7d6b8', hair = '#f0c454', hairD = '#d6a33a', hairL = '#fbe39a';
+    const skin = '#f7d6b8', hair = '#f0c454', hairD = '#d6a33a', hairL = '#fbe39a', ribbon = '#e0344f', ribbonD = '#b82640';
     const coat = '#2f6475', coatD = '#244f5d', blouseD = '#eadfca', book = '#c0462f', bookD = '#963322';
     return inked(
-      // quill through the bun (drawn first so the bun sits in front of its shaft)
-      G('rotate(38 50 21)',
-        sh('M50 -3C55.5 2 56.5 10 53.5 17.5L50 20L46.5 17.5C43.5 10 44.5 2 50 -3Z', WHITE,
-          S('M50 -3C55.5 2 56.5 10 53.5 17.5L50 20Z', '#e7ddcb')) +
-        L('M50 -1.5V34', 1.3) + L('M47 8.5L45.4 7.4M53 6.8L54.8 5.6', 1.1) +
-        P('M48.8 31.6H51.2L50 37Z', '#2e2828', ' stroke-width="1.4"')) +
-      sh('M40.5 21C40.5 15.5 45 11.5 50 11.5C55 11.5 59.5 15.5 59.5 21C59.5 26.5 55 30.5 50 30.5C45 30.5 40.5 26.5 40.5 21Z', hair,
-        S('M54 12.4C57.5 14 59.5 17.5 59.5 21C59.5 26.5 55 30.5 50 30.5C54.5 27 56.5 20 54 12.4Z', hairD)) +
-        L('M45 19.5Q50 15.5 55 19.5Q53.6 24.6 48.6 23.6', 1.3, hairD) +
-        // the pouf of hair behind the head
-        P('M20 61C12 43 26 25.5 50 25.5C74 25.5 88 43 80 61Z', hair) +
+      // the ponytail swings out behind her head
+      sh('M40 30C28 22 11.5 30 11.5 48C11.5 61 15 71 22 80.5C19.5 70 20.5 58 26 50C29 44.5 34 39 40 36Z', hair,
+        S('M40 36C34 39 29 44.5 26 50C20.5 58 19.5 70 22 80.5C19 76 17.6 70.5 17.4 64.5C19 55 24 45.5 33 38.6Z', hairD) +
+        S('M30 27.6C22 28.4 16 35 15.4 44C18 37 23.5 31.6 31.4 29.4Z', hairL)) +
+        L('M33 31.6C22.5 33 16.6 42 17.2 54M35.4 34.4C26.6 40 23 50 22.6 62', 1.2, hairD) +
         torso(coat) +
         sym(P('M36.5 83L46.5 100L41 104H30.5C28.5 95.5 30.5 88 36.5 83Z', coatD)) +
         P('M38.5 83L50 99L61.5 83Z', WHITE) +
@@ -434,11 +429,17 @@ const ART = {
         L('M35.5 52.4Q40 50.4 44.5 51.8', 1.9, hairD) + L('M55.5 51.8Q60 50.4 64.5 52.4', 1.9, hairD) +
         nose(skin, 50, 64.8) +
         openSmile(50, 69.4, 4.8, 5.2) +
-        // swept-up front of the hair
-        sh('M23.5 58C15 43 27 29 50 29C73 29 85 43 76.5 58C75 51 71.5 46 66 43.4C61 41.6 57 41.8 53.6 40.6Q50 39.4 46.4 40.6C43 41.8 39 41.6 34 43.4C28.5 46 25 51 23.5 58Z', hair,
-          S('M61 30.6C73 33.5 82 43 76.5 58C75.5 53.5 74 50 71.6 47.6C72 40.5 68 34.5 61 30.6Z', hairD) +
-          S('M27.5 43C30.5 36.5 37.5 32 45 31C39 34 34.5 38 31.8 43.6Z', hairL)) +
-        L('M30 47.5Q33.5 39.5 44 37M70 47.5Q66.5 39.5 56 37', 1.2, hairD) +
+        // hair pulled back smoothly from a side parting towards the ponytail
+        sh('M23.5 58C21 41 32 30 50 30C68 30 79 41 76.5 58C75 51 71 46.5 64 45C57 43.5 49 43.5 43.5 40.5C40 44 34 46.5 30 49C27 51.5 25 54.5 23.5 58Z', hair,
+          S('M62 31.6C72 35 78.6 44.5 76.5 58C75.5 53.5 73.6 50 71 47.8C70.6 41 67.4 35.6 62 31.6Z', hairD) +
+          S('M28.6 42.6C31.6 36.6 37.6 32.6 44.6 31.6C39.2 34.6 35.2 38.4 32.6 43.2Z', hairL)) +
+        L('M59 44.2Q47.5 37.6 40.5 33.4M69 47.4Q57.5 36.4 45.5 32', 1.2, hairD) +
+        // ribbon bow where the ponytail is tied
+        G('rotate(-24 38.5 31)',
+          P('M38.5 31C35.5 25.8 30 25.8 30.4 31C30 36.2 35.5 36.2 38.5 31Z', ribbon, ' stroke-width="1.8"') +
+          P('M38.5 31C41.5 25.8 47 25.8 46.6 31C47 36.2 41.5 36.2 38.5 31Z', ribbon, ' stroke-width="1.8"') +
+          P('M37.4 32.4L35 38.6L37.4 38L38.5 33ZM39.6 32.4L42 38.6L39.6 38L38.5 33Z', ribbonD, ' stroke-width="1.5"') +
+          E(38.5, 31, 2.2, 2.4, ribbonD, ' stroke-width="1.6"')) +
         // her favourite history book, a little pyramid on the cover
         G('rotate(-12 70 93) translate(-3 0)',
           P('M79 81.5H81.8V104H79Z', CREAM, ' stroke-width="2"') +
