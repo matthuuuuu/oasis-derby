@@ -181,14 +181,18 @@ export function evaluateActions(s, playerId, { legSims = 1500, raceSims = 600 } 
   return { options, leg, race };
 }
 
-/** Pick the bot's move. `level`: 'easy' plays looser, 'clever' plays the numbers. */
+/**
+ * Pick the bot's move. Each option's value gets a random wobble, then the highest wins.
+ *   easy:   rough estimates, big wobble, any of its top 12 moves (~44% best, often a weak move)
+ *   clever: careful estimates, only its top 3 moves (~65% best / 23% 2nd / 12% 3rd)
+ */
 export function chooseBotAction(s, playerId, level = 'clever') {
   const easy = level === 'easy';
   const { options } = evaluateActions(s, playerId, easy ? { legSims: 300, raceSims: 150 } : {});
-  const noise = easy ? 0.9 : 0.12;
+  const noise = easy ? 0.9 : 0.45;
   let best = options[0];
   let bestScore = -Infinity;
-  for (const o of options.slice(0, 12)) {
+  for (const o of options.slice(0, easy ? 12 : 3)) {
     const score = o.ev + (Math.random() - 0.5) * 2 * noise;
     if (score > bestScore) {
       bestScore = score;
