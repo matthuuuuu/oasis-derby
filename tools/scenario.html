@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" data-theme="sand">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oasis Derby — scenarios</title>
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<div id="scene"></div>
+<div id="app"></div>
+<script type="module">
+  // Development "storybook": renders real screens with hand-made game states.
+  //   ?case=game | game8 | stacks | leg | finale | finish | howto   &theme=sand|sunset|night
+  import { html, render } from '../vendor/preact-htm.js';
+  import { createGame, applyAction } from '../js/engine/game.js';
+  import { GameScreen } from '../js/ui/game.js';
+  import { LegResultsSheet, FinaleSheet, FinishBetSheet } from '../js/ui/modals.js';
+  import { HowToSheet } from '../js/ui/howto.js';
+  import { sceneSVG } from '../js/art/scenery.js';
+  import { setPrefs } from '../js/ui/prefs.js';
+
+  const q = new URLSearchParams(location.search);
+  const theme = q.get('theme') || 'sand';
+  setPrefs({ theme, sound: false, odds: q.has('odds') });
+  document.getElementById('scene').innerHTML = sceneSVG(theme);
+
+  const names = [
+    ['Sam', 'merchant'], ['Hattie', 'explorer', 'clever'], ['Karim', 'camelmaster', 'clever'], ['Zara', 'mystic', 'easy'],
+    ['Lotfia', 'aviator', 'clever'], ['Bashir', 'bookie', 'clever'], ['Clementine', 'socialite', 'easy'], ['Nour', 'catkeeper', 'clever'],
+  ];
+  const players = (n) => names.slice(0, n).map(([name, character, bot], i) => ({ id: `p${i}`, name, character, bot: bot || null }));
+
+  function midGame(n) {
+    let s = createGame({ players: players(n), seed: 11, startPlayer: 0 });
+    s.stacks = { 3: ['green'], 5: ['yellow', 'blue', 'red'], 6: ['purple'], 12: ['white'], 14: ['black'] };
+    s.tiles = { 8: { owner: 'p1', side: 'cheer' }, 10: { owner: 'p2', side: 'boo' } };
+    s.players[0].legTickets = [{ color: 'red', value: 5 }];
+    s.players[1].legTickets = [{ color: 'blue', value: 5 }, { color: 'red', value: 3 }];
+    s.players[1].pyramidTickets = 1;
+    s.players[2].pyramidTickets = 1;
+    s.legStacks.red = [2, 2];
+    s.legStacks.blue = [3, 2, 2];
+    s.rolled = [{ die: 'blue', value: 2 }, { die: 'grey', value: 1, shown: 'black' }];
+    s.diceLeft = ['yellow', 'green', 'red', 'purple'];
+    s.pyramidLeft = 3;
+    s.winnerBets = [{ player: 'p2', color: 'red' }];
+    s.loserBets = [{ player: 'p1', color: 'purple' }, { player: 'p0', color: 'green' }];
+    s.players[2].finishCards = ['blue', 'yellow', 'green', 'purple'];
+    s.players[1].finishCards = ['blue', 'yellow', 'green', 'red'];
+    s.players[0].finishCards = ['blue', 'yellow', 'red', 'purple'];
+    s.players.forEach((p, i) => (p.coins = [4, 7, 5, 3, 6, 2, 9, 3][i]));
+    if (n >= 6) {
+      s.players[3].partner = 'p5';
+      s.players[5].partner = 'p3';
+    }
+    s.leg = 2;
+    s.turn = 0;
+    return s;
+  }
+
+  function finished() {
+    let s = createGame({ players: players(5), seed: 5, startPlayer: 0 });
+    s.stacks = { 15: ['green', 'blue'], 11: ['yellow'], 9: ['red', 'white'], 4: ['purple'], 13: ['black'] };
+    s.winnerBets = [{ player: 'p1', color: 'green' }, { player: 'p2', color: 'blue' }, { player: 'p3', color: 'blue' }, { player: 'p0', color: 'blue' }];
+    s.loserBets = [{ player: 'p4', color: 'purple' }, { player: 'p0', color: 'red' }];
+    s.players[0].legTickets = [{ color: 'blue', value: 5 }];
+    s.players[3].legTickets = [{ color: 'green', value: 5 }];
+    s.players.forEach((p, i) => (p.coins = [14, 11, 9, 16, 10][i]));
+    return applyAction(s, 'p0', { type: 'roll' }, { roll: { die: 'blue', value: 3 } }).state;
+  }
+
+  const fake = (state, myIds = ['p0']) => ({
+    kind: 'local', state, myIds, lobby: null, status: { level: 'ok' },
+    subscribe: () => () => {}, act: () => {}, setIdleCheck: () => {}, rematch: () => {},
+  });
+
+  const root = document.getElementById('app');
+  const c = q.get('case') || 'game';
+  if (c === 'game') render(html`<${GameScreen} session=${fake(midGame(4))} onExit=${() => {}} />`, root);
+  if (c === 'game8') render(html`<${GameScreen} session=${fake(midGame(8))} onExit=${() => {}} />`, root);
+  if (c === 'stacks') {
+    const s = midGame(3);
+    s.stacks = { 11: ['blue', 'yellow', 'green', 'red', 'purple', 'white'], 2: ['black'] };
+    render(html`<${GameScreen} session=${fake(s)} onExit=${() => {}} />`, root);
+  }
+  if (c === 'botpick') {
+    // Hattie (a bot) makes a move that arrives `at` ms after load, so a screenshot taken
+    // just after it shows the "hover" on what she picked:  &kind=legBet|roll|tile|finishBet
+    const kind = q.get('kind') || 'legBet';
+    const s = midGame(4);
+    s.turn = 1;
+    const moves = {
+      legBet: { type: 'legBet', color: 'red' },
+      roll: { type: 'roll' },
+      tile: { type: 'tile', space: 13, side: 'cheer' },
+      finishBet: { type: 'finishBet', pile: 'winner', color: 'blue' },
+    };
+    const { state: next, events } = applyAction(s, 'p1', moves[kind]);
+    const at = Number(q.get('at') || 3400);
+    const session = { ...fake(s), subscribe: (fn) => (setTimeout(() => fn({ events, state: next }), at), () => {}) };
+    render(html`<${GameScreen} session=${session} onExit=${() => {}} />`, root);
+  }
+  if (c === 'huts') {
+    // four dice already rolled this leg (one hut still empty)
+    const s = midGame(3);
+    s.rolled = [
+      { die: 'green', value: 1 },
+      { die: 'yellow', value: 3 },
+      { die: 'grey', value: 2, shown: 'white' },
+      { die: 'red', value: 1 },
+    ];
+    s.diceLeft = ['blue', 'purple'];
+    s.pyramidLeft = 1;
+    render(html`<${GameScreen} session=${fake(s)} onExit=${() => {}} />`, root);
+  }
+  if (c === 'piles') {
+    // 4 on the bottom row, 3 (with both crazy camels) squeezed on the left side
+    const s = midGame(3);
+    s.stacks = { 3: ['blue', 'yellow', 'green', 'red'], 7: ['purple', 'white', 'black'] };
+    s.tiles = {};
+    render(html`<${GameScreen} session=${fake(s)} onExit=${() => {}} />`, root);
+  }
+  if (c === 'piles2') {
+    // 5 on the top row, 2 on the right side
+    const s = midGame(3);
+    s.stacks = { 11: ['red', 'green', 'blue', 'purple', 'yellow'], 15: ['black', 'white'] };
+    s.tiles = {};
+    render(html`<${GameScreen} session=${fake(s)} onExit=${() => {}} />`, root);
+  }
+  if (c === 'leg') {
+    const s = midGame(4);
+    const result = {
+      leg: 2, first: 'red', second: 'blue', order: ['red', 'blue', 'yellow', 'purple', 'green'],
+      rows: [
+        { player: 'p0', items: [{ kind: 'leg', color: 'red', value: 5, reward: 5 }, { kind: 'pyramid', reward: 1 }], bonus: null, total: 6, before: 4, after: 10 },
+        { player: 'p1', items: [{ kind: 'leg', color: 'blue', value: 5, reward: 1 }, { kind: 'leg', color: 'green', value: 3, reward: -1 }], bonus: null, total: 0, before: 7, after: 7 },
+        { player: 'p2', items: [{ kind: 'pyramid', reward: 1 }, { kind: 'pyramid', reward: 1 }], bonus: { from: 'p0', kind: 'leg', color: 'red', value: 5, reward: 5 }, total: 7, before: 5, after: 12 },
+        { player: 'p3', items: [{ kind: 'leg', color: 'purple', value: 5, reward: -1 }], bonus: null, total: -1, before: 0, after: 0 },
+      ],
+    };
+    render(html`<${GameScreen} session=${fake(s)} onExit=${() => {}} /><${LegResultsSheet} result=${result} state=${s} onClose=${() => {}} />`, root);
+  }
+  if (c === 'finale') {
+    const s = finished();
+    render(html`<${FinaleSheet} state=${s} canRematch=${true} onRematch=${() => {}} onExit=${() => {}} onClose=${() => {}} />`, root);
+  }
+  if (c === 'finish') {
+    const s = midGame(4);
+    render(html`<${FinishBetSheet} state=${s} me=${s.players[0]} needsGate=${q.has('gate')} onConfirm=${() => {}} onClose=${() => {}} />`, root);
+  }
+  if (c === 'howto') render(html`<${HowToSheet} onClose=${() => {}} />`, root);
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>device frames</title>
+<style>
+  body { margin: 0; padding: 16px; background: #555; display: flex; gap: 16px; align-items: flex-start; font: 12px system-ui; color: #fff; }
+  figure { margin: 0; }
+  iframe { border: 0; background: #fff; display: block; border-radius: 18px; }
+</style>
+</head>
+<body>
+<script>
+  // Shows a page inside phone-sized frames (headless Chrome can't make tiny windows).
+  //   ?src=/tools/scenario.html%3Fcase%3Dgame&sizes=390x844,360x740&scroll=0
+  const q = new URLSearchParams(location.search);
+  const src = q.get('src') || '/';
+  const sizes = (q.get('sizes') || '390x844').split(',');
+  for (const s of sizes) {
+    const [w, h] = s.split('x').map(Number);
+    const f = document.createElement('figure');
+    f.innerHTML = `<iframe src="${src}" width="${w}" height="${h}"></iframe><figcaption>${w}×${h}</figcaption>`;
+    document.body.appendChild(f);
+    const scroll = Number(q.get('scroll') || 0);
+    if (scroll) f.querySelector('iframe').addEventListener('load', (e) => setTimeout(() => e.target.contentWindow.scrollTo(0, scroll), 800));
+  }
+</script>
+</body>
+</html>

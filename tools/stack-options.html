@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pile styles</title>
+<link rel="stylesheet" href="../css/styles.css">
+<style>
+  body { background: #f3cf85; padding: 18px 26px 10px; }
+  h1 { font-family: var(--font-display); color: var(--heading); font-size: 30px; margin: 0 0 4px; }
+  .sub { font-weight: 800; color: var(--muted); margin: 0 0 8px; }
+  .opt { display: grid; grid-template-columns: 250px repeat(4, 196px); gap: 14px; align-items: end; padding: 10px 0 14px; border-top: 2px dashed rgba(120,70,25,.25); }
+  .opt:first-of-type { border-top: 0; }
+  .label { align-self: center; }
+  .label .letter { display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--accent); font-family: var(--font-display); font-size: 28px; color: var(--accent-ink); box-shadow: 0 3px 0 #b77a1c; margin-bottom: 8px; }
+  .label h2 { font-size: 24px; color: var(--heading); }
+  .label p { font-weight: 700; color: var(--muted); font-size: 14px; margin-top: 4px; line-height: 1.35; }
+  .slot { position: relative; height: 330px; }
+  .cellbox { position: absolute; left: 13px; bottom: 26px; width: 170px; height: 170px; border-radius: 27px;
+    background: radial-gradient(circle at 35% 30%, #fff1c9, #fbe2a4);
+    box-shadow: inset 0 -4px 0 rgba(217,165,92,.6), 0 0 0 2px rgba(217,165,92,.7); }
+  .cellbox.ghost { opacity: .5; height: 88px; border-radius: 0 0 27px 27px; }
+  .cap { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-weight: 900; font-size: 13px; color: var(--muted); }
+  .cam { position: absolute; }
+  .cam > div { width: 100%; height: 100%; }
+  .cam.flip > div { transform: scaleX(-1); }
+  .cam svg { width: 100%; height: 100%; overflow: visible; }
+</style>
+</head>
+<body>
+<h1>Pick a pile style</h1>
+<p class="sub">Same camels, three ways to stack them. Each row shows piles of 2, 3 and 4, plus 3 camels squeezed into a tight space on the side of the loop.</p>
+<div id="out"></div>
+<script type="module">
+  import { camelSVG } from '../js/art/camels.js';
+  import { pileSlot, CAMEL_SIZE } from '../js/ui/stacking.js';
+
+  const OPTIONS = [
+    ['A', 'tower', 'Camel tower', 'Everyone stands on each other’s backs, like the wooden pieces in the real game. Heads alternate left and right.'],
+    ['B', 'snuggle', 'Snuggle heap', 'Everyone lies down in a cosy pile, like the capybaras. Heads poke out left and right.'],
+    ['C', 'staircase', 'Piggyback staircase', 'The bottom camel stands; the rest lie in a neat diagonal line, all facing the way they race. Every head peeks out in front.'],
+  ];
+  const PILES = [
+    { camels: ['yellow', 'blue'], cap: '2 camels' },
+    { camels: ['green', 'red', 'purple'], cap: '3 camels' },
+    { camels: ['blue', 'yellow', 'green', 'red'], cap: '4 camels' },
+    { camels: ['purple', 'blue', 'yellow'], cap: '3 on a tight side space', tight: true },
+  ];
+  const CELL = 170;
+  const camW = CELL * (CAMEL_SIZE / 0.2); // same camel-to-space ratio as the game board
+  const camH = (camW * 100) / 120;
+  const svgs = {};
+  const art = (c, pose) => (svgs[c + pose] ||= camelSVG(c, { pose }));
+
+  let html = '';
+  for (const [letter, style, name, blurb] of OPTIONS) {
+    html += `<section class="opt"><div class="label"><div class="letter">${letter}</div><h2>${name}</h2><p>${blurb}</p></div>`;
+    for (const pile of PILES) {
+      const n = pile.camels.length;
+      // the slot is 330px tall; the cell sits 26px above the bottom
+      const cellTop = 330 - 26 - CELL;
+      const baseTop = cellTop + CELL * 0.96 - camH;
+      const room = baseTop - (cellTop - CELL * (pile.tight ? 0.04 : 0.35));
+      const ruleLeft = () => true; // bottom-row camels race to the left
+      let cams = '';
+      pile.camels.forEach((c, i) => {
+        const s = pileSlot(style, i, n, ruleLeft, { camW, camH, room });
+        let x = 13 + (CELL - camW) / 2 + s.dx;
+        x = Math.max(13 - CELL * 0.03, Math.min(13 + CELL - camW + CELL * 0.03, x));
+        const y = baseTop - s.rise;
+        cams += `<div class="cam ${s.faceLeft ? 'flip' : ''}" style="left:${x}px;top:${y}px;width:${camW}px;height:${camH}px;z-index:${i + 2}"><div>${art(c, s.pose)}</div></div>`;
+      });
+      const ghost = pile.tight ? `<div class="cellbox ghost" style="bottom:${26 + CELL + 6}px"></div>` : '';
+      html += `<div class="slot">${ghost}<div class="cellbox"></div>${cams}<div class="cap">${pile.cap}</div></div>`;
+    }
+    html += `</section>`;
+  }
+  document.getElementById('out').innerHTML = html;
+</script>
+</body>
+</html>

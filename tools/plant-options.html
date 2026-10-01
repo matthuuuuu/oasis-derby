@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oasis planting options</title>
+<style>
+  html, body { margin: 0; background: #2b1d14; color: #fff3d4; font: 15px/1.4 system-ui, sans-serif; }
+  header { max-width: 1260px; margin: 0 auto; padding: 20px 20px 6px; }
+  h1 { margin: 0; font-size: 24px; }
+  header p { margin: 4px 0 0; opacity: .75; }
+  .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; max-width: 1300px; margin: 0 auto; padding: 14px 16px 26px; }
+  .card { width: 384px; background: #3a2818; border-radius: 20px; padding: 12px 12px 14px; box-shadow: 0 3px 12px #0005; }
+  /* one board square in 300-unit centre coordinates, clipped like the board (corner radius 36/300 = 12%) */
+  .board { position: relative; width: 384px; height: 384px; border-radius: 12%; overflow: hidden; }
+  .board > svg { position: absolute; inset: 0; }
+  .layer { position: absolute; }
+  .layer svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .pyr { left: 27%; top: 18%; width: 46%; height: 38.3333%; } /* x 81–219, y 54–169 */
+  .hut { top: 81.0667%; width: 15.3333%; height: 15.3333%; } /* 46×46 at y 243.2 */
+  .label { display: flex; align-items: baseline; gap: 10px; margin: 11px 4px 0; }
+  .letter { font-size: 28px; font-weight: 800; color: #f9ca74; line-height: 1; }
+  .name { font-size: 19px; font-weight: 700; }
+  .desc { margin: 3px 4px 0; opacity: .8; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Oasis centrepiece — planting options</h1>
+  <p>More grass and reeds growing out of the green hedge around the pool. Sand theme, with the dice pyramid and huts overlaid exactly as on the board.</p>
+</header>
+<div class="grid" id="grid"></div>
+<script type="module">
+  import { oasisSVG } from '../js/art/scenery.js';
+  import { pyramidSVG, hutSVG, hutFrontSVG } from '../js/art/tokens.js';
+
+  const OPTIONS = [
+    ['A', 'Tidy tufts', 'A dozen neat little grass tufts evenly spaced round the hedge, plus the two end reed clumps.'],
+    ['B', 'Reed bed', 'Tall cattail clumps at both ends and the top corners, short ones low down, grass in between.'],
+    ['C', 'Wild meadow', 'A dense fringe of wispy grass of mixed heights all round the hedge; reeds only at the ends.'],
+    ['D', 'Papyrus oasis', 'Egyptian papyrus umbrella stalks behind the pool and at both ends, with small tufts between.'],
+    ['E', 'Flowery', 'Grass and reeds with tiny yellow and white desert wildflowers sprinkled over the hedge.'],
+  ];
+  const q = new URLSearchParams(location.search);
+  const theme = q.get('theme') || 'sand';
+  const pct = (v) => `${(v / 3).toFixed(4)}%`; // 300-unit coordinates → % of the square
+  const huts = [15, 71, 127, 183, 239]
+    .map((x) => `<div class="layer hut" style="left:${pct(x)}">${hutSVG()}${hutFrontSVG()}</div>`)
+    .join('');
+  document.getElementById('grid').innerHTML = OPTIONS.map(
+    ([key, name, desc]) =>
+      `<figure class="card" style="margin:0">` +
+      `<div class="board">${oasisSVG(theme, { plants: key })}<div class="layer pyr">${pyramidSVG()}</div>${huts}</div>` +
+      `<div class="label"><span class="letter">${key}</span><span class="name">${name}</span></div>` +
+      `<p class="desc">${desc}</p></figure>`
+  ).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>icon</title>
+<style>html, body { margin: 0; background: transparent; } #i, #i svg { width: 100vw; height: 100vh; display: block; }</style>
+</head>
+<body>
+<div id="i"></div>
+<script type="module">
+  // Renders the app logo full-window so tools/snap.mjs can save it as a PNG icon.
+  //   ?variant=rounded | square | maskable
+  import { logoSVG } from '../js/art/tokens.js';
+  const v = new URLSearchParams(location.search).get('variant') || 'rounded';
+  const opts = v === 'square' ? { square: true } : v === 'maskable' ? { square: true, scale: 0.72 } : {};
+  document.getElementById('i').innerHTML = logoSVG(opts);
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Art gallery (camels & tokens)</title>
+<style>
+  body { margin: 0; font: 14px system-ui, sans-serif; background: #fbe3a6; color: #3b2412; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; padding: 16px; }
+  .dark { background: #2a1712; color: #fbe6c4; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .big svg { width: 240px; height: 200px; }
+  .small svg { width: 60px; height: 50px; }
+  .badge svg { width: 40px; height: 40px; }
+  .stack { position: relative; width: 120px; height: 160px; }
+  .stack > div { position: absolute; left: 0; width: 120px; height: 100px; }
+  .flip { transform: scaleX(-1); }
+  h2 { margin: 8px 16px 0; font-size: 16px; }
+</style>
+</head>
+<body>
+<div id="out"></div>
+<script type="module">
+  const params = new URLSearchParams(location.search);
+  const show = params.get('show') || 'camels';
+  const out = document.getElementById('out');
+  const camels = await import('../js/art/camels.js');
+  const all = ['blue', 'yellow', 'green', 'red', 'purple', 'white', 'black'];
+  if (show === 'camels') {
+    const pile = (list, flipAll = false) =>
+      `<div class="stack" style="width:170px;height:230px">${list
+        .map((c, i) => {
+          const zig = i === 0 ? 0 : (i % 2 ? 1 : -1) * 20;
+          const flip = (c === 'white' || c === 'black') !== flipAll;
+          return `<div class="${flip ? 'flip' : ''}" style="left:${25 + zig}px;bottom:${i * 44}px">${camels.camelSVG(c, { pose: list.length > 1 ? 'sit' : 'stand' })}</div>`;
+        })
+        .join('')}</div>`;
+    out.innerHTML = `
+      <h2>Standing</h2>
+      <div class="row big">${all.slice(0, 4).map((c) => `<div class="cell">${camels.camelSVG(c)}${c}</div>`).join('')}</div>
+      <div class="row big">${all.slice(4).map((c) => `<div class="cell">${camels.camelSVG(c)}${c}</div>`).join('')}</div>
+      <h2>Sitting (in stacks)</h2>
+      <div class="row big">${all.slice(0, 4).map((c) => `<div class="cell">${camels.camelSVG(c, { pose: 'sit' })}${c}</div>`).join('')}</div>
+      <div class="row big">${all.slice(4).map((c) => `<div class="cell">${camels.camelSVG(c, { pose: 'sit' })}${c}</div>`).join('')}</div>
+      <h2>On a dark background (nothing should float)</h2>
+      <div class="row big dark" style="background:#3d2320">${['yellow', 'purple', 'black'].map((c) => `<div class="cell">${camels.camelSVG(c)}</div>`).join('')}${['yellow', 'black'].map((c) => `<div class="cell">${camels.camelSVG(c, { pose: 'sit' })}</div>`).join('')}</div>
+      <h2>Stacks (zigzag piles)</h2>
+      <div class="row">${pile(['red', 'blue', 'yellow'])}${pile(['green', 'black', 'purple', 'white'], true)}${pile(['yellow', 'green'])}${pile(['blue', 'yellow', 'green', 'red', 'purple'])}</div>
+      <h2>Badges</h2>
+      <div class="row badge">${all.map((c) => `<div class="cell">${camels.camelBadgeSVG(c)}</div>`).join('')}</div>`;
+  } else if (show === 'tokens') {
+    const t = await import('../js/art/tokens.js');
+    const box = (svg, w, h = w) => `<div class="cell" style="width:${w}px"><div style="width:${w}px;height:${h}px">${svg.replace('<svg ', `<svg width="${w}" height="${h}" `)}</div></div>`;
+    // a dice hut, optionally with a (flat-coloured stand-in) die nested inside
+    const hut = (w, face) => `<div class="cell" style="width:${w}px"><div style="position:relative;width:${w}px;height:${w}px">
+      <div style="position:absolute;inset:0">${t.hutSVG().replace('<svg ', `<svg width="${w}" height="${w}" `)}</div>
+      ${face ? `<div style="position:absolute;left:${w * 0.21}px;bottom:${w * 0.07}px;width:${w * 0.58}px;height:${w * 0.58}px;border-radius:22%;background:${face};box-shadow:0 0 0 2px #3b2412"></div>` : ''}
+      <div style="position:absolute;inset:0">${t.hutFrontSVG().replace('<svg ', `<svg width="${w}" height="${w}" `)}</div>
+    </div></div>`;
+    out.innerHTML = `
+      <h2>Pyramid, dice huts, coins, tickets, logo</h2>
+      <div class="row">${box(t.pyramidSVG(), 220, 183)}${box(t.pyramidSVG(), 90, 75)}${hut(96, '#1a9fd6')}${hut(96)}${hut(46, '#f5cf2f')}
+        ${box(t.coinSVG(1), 64)}${box(t.coinSVG(5), 64)}${box(t.coinSVG(5), 24)}${box(t.pyramidTicketSVG(), 64)}${box(t.pyramidTicketSVG(), 28)}
+        ${box(t.logoSVG(), 160)}${box(t.logoSVG(), 48)}</div>
+      <h2>Action icons</h2>
+      <div class="row">${Object.values(t.ACTION_ICONS).map((f) => box(f(), 96)).join('')}${Object.values(t.ACTION_ICONS).map((f) => box(f(), 40)).join('')}</div>
+      <div class="row dark">${Object.values(t.ACTION_ICONS).map((f) => box(f(), 64)).join('')}
+        <span style="color:#fbe6c4;display:flex;gap:10px;flex-wrap:wrap">${t.ICON_NAMES.map((n) => t.icon(n, 24)).join('')}</span></div>
+      <div class="row badge">${all.map((c) => `<div class="cell">${camels.camelBadgeSVG(c)}</div>`).join('')}</div>`;
+  }
+</script>
+</body>
+</html>

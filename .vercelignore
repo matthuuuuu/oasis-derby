@@ -1,0 +1,5 @@
+# Development-only files — not needed on the live site
+tests/
+tools/
+docs/
+.claude/

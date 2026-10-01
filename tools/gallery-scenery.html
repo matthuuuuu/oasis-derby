@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oasis Derby — scenery gallery</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #2b1d14; color: #fff3d4; font: 14px/1.4 system-ui, sans-serif; }
+  .fill { position: fixed; inset: 0; overflow: hidden; }
+  .grid { display: flex; flex-wrap: wrap; gap: 18px; padding: 18px; align-items: flex-start; }
+  figure { margin: 0; }
+  figcaption { opacity: .75; margin-top: 4px; }
+  .scene { width: 560px; height: 350px; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 10px #0006; }
+  .phone { width: 162px; height: 350px; overflow: hidden; border-radius: 22px; border: 3px solid #120b07; }
+  .oasis { width: 300px; height: 300px; border-radius: 8px; overflow: hidden; position: relative; }
+  .guide { position: absolute; inset: 0; pointer-events: none; }
+  .box { overflow: hidden; }
+  nav { padding: 12px 18px 0; }
+  nav a { color: #f9ca74; margin-right: 12px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+  import { sceneSVG, oasisSVG } from '../js/art/scenery.js';
+
+  const q = new URLSearchParams(location.search);
+  const theme = q.get('theme') || 'sand';
+  const view = q.get('view') || 'all';
+  const root = document.getElementById('root');
+  const themes = ['sand', 'sunset', 'night'];
+
+  // Layout zones the app draws on top of the oasis: dice pyramid keep-clear zone (x 80–220, y 51–196)
+  // and the five square dice huts (46×46 at x 15/71/127/183/239, y 243–289).
+  const huts = [15, 71, 127, 183, 239].map((x) => `<rect x="${x}" y="243" width="46" height="46" fill="#000" fill-opacity=".2" stroke="#000" stroke-dasharray="4 3"/>`).join('');
+  const guide = `<svg class="guide" viewBox="0 0 300 300"><rect x="80" y="51" width="140" height="145" fill="#fff" fill-opacity=".18" stroke="#fff" stroke-dasharray="4 3"/>${huts}</svg>`;
+
+  if (view === 'check') {
+    // strict XML parse + style-guide lint for every output
+    const allowed = new Set(['svg', 'path', 'circle', 'ellipse', 'rect', 'polygon', 'polyline', 'line', 'g', 'defs', 'linearGradient', 'radialGradient', 'stop', 'clipPath', 'use']);
+    // Fingerprints of the user-approved board centrepiece (ids normalised by order of appearance, then
+    // FNV-1a over the whole string) — every oasisSVG output must still match these exactly.
+    const OASIS_PRINTS = {"oasis-night-A":"36235:f0f133e6","oasis-night-B":"36230:4ffb047c","oasis-night-C":"39261:0eb08bdd","oasis-night-D":"36221:a07dd385","oasis-night-E":"35880:c1feae99","oasis-night":"35880:c1feae99","oasis-sand-A":"35648:4fe7414d","oasis-sand-B":"35643:652082b5","oasis-sand-C":"38674:1c951aae","oasis-sand-D":"35634:1ec631a0","oasis-sand-E":"35293:b70d8756","oasis-sand":"35293:b70d8756","oasis-sunset-A":"35651:442aa67f","oasis-sunset-B":"35646:7e19c0c3","oasis-sunset-C":"38677:69d85be8","oasis-sunset-D":"35637:4d9db9e4","oasis-sunset-E":"35296:59c36619","oasis-sunset":"35296:59c36619"};
+    const normIds = (svg) => {
+      const map = new Map([...svg.matchAll(/ id="([^"]+)"/g)].map((m, i) => [m[1], 'i' + i]));
+      return svg.replace(/(id="|href="#|url\(#)([^")]+)/g, (m, pre, v) => pre + (map.get(v) ?? v));
+    };
+    const fnv = (s) => {
+      let h = 0x811c9dc5;
+      for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193) >>> 0;
+      return h.toString(16).padStart(8, '0');
+    };
+    const rows = [];
+    const seen = new Map();
+    let unchanged = 0;
+    const plantFns = ['A', 'B', 'C', 'D', 'E'].map((k) => [`oasis/${k}`, (t) => oasisSVG(t, { plants: k })]);
+    for (const t of themes) {
+      for (const [name, fn] of [['scene', sceneSVG], ['oasis', oasisSVG], ...plantFns]) {
+        for (let call = 0; call < 2; call++) {
+          const svg = fn(t);
+          let same = '';
+          if (name.startsWith('oasis')) {
+            const n = normIds(svg);
+            const key = name === 'oasis' ? `oasis-${t}` : `oasis-${t}-${name.slice(6)}`;
+            const ok = `${n.length}:${fnv(n)}` === OASIS_PRINTS[key];
+            if (ok) unchanged++;
+            same = `, unchangedVsApproved=${ok}`;
+          }
+          const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
+          const err = doc.querySelector('parsererror');
+          const els = [...doc.getElementsByTagName('*')];
+          const bad = [...new Set(els.map((e) => e.localName).filter((n) => !allowed.has(n)))];
+          const ids = els.map((e) => e.id).filter(Boolean);
+          const dup = ids.filter((v, i) => ids.indexOf(v) !== i);
+          const refs = [...svg.matchAll(/(?:href="#|url\(#)([^")]+)/g)].map((m) => m[1]);
+          const dangling = refs.filter((r) => !ids.includes(r));
+          const clash = ids.filter((v) => seen.has(v) && seen.get(v) !== `${name}-${t}-${call}`);
+          ids.forEach((v) => seen.set(v, `${name}-${t}-${call}`));
+          const style = /<style|class=|var\(|<text|<image|filter/.test(svg);
+          rows.push(`${name} ${t} #${call}: ${svg.length} bytes, ${els.length} elements, xml=${err ? 'ERROR ' + err.textContent.slice(0, 120) : 'ok'}, forbidden=[${bad}], dupIds=${dup.length}, dangling=[${[...new Set(dangling)]}], crossCallClash=${clash.length}, styleOrText=${style}${same}`);
+        }
+      }
+    }
+    rows.unshift(`${rows.length} outputs checked · oasisSVG outputs identical to the approved version: ${unchanged}/36\n`);
+    root.innerHTML = `<pre id="out" style="white-space:pre-wrap;padding:16px;font-size:14px">${rows.join('\n')}</pre>`;
+  } else if (view === 'scene') {
+    // full-viewport scene (screenshot at 1600x1000, or 390x844 for the phone crop)
+    root.innerHTML = `<div class="fill">${sceneSVG(theme)}</div>`;
+  } else if (view === 'zoom') {
+    // inspect a region of the scene: ?view=zoom&r=x,y,w,h
+    const r = (q.get('r') || '0,0,800,500').split(',').join(' ');
+    const svg = sceneSVG(theme).replace('viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMax slice"', `viewBox="${r}" preserveAspectRatio="xMidYMid meet"`);
+    root.innerHTML = `<div class="fill">${svg}</div>`;
+  } else if (view === 'box') {
+    const w = q.get('w') || 1920;
+    const h = q.get('h') || 1080;
+    root.innerHTML = `<div class="box" style="width:${w}px;height:${h}px">${sceneSVG(theme)}</div>`;
+  } else if (view === 'oasis') {
+    // optional &r=x,y,w,h zooms into a region of the 300x300 centrepiece; &plants=A..E picks a planting option
+    let svg = oasisSVG(theme, { plants: q.get('plants') || undefined });
+    if (q.has('r')) svg = svg.replace('viewBox="0 0 300 300"', `viewBox="${q.get('r').split(',').join(' ')}"`);
+    root.innerHTML = `<div class="fill" style="display:grid;place-items:center"><div style="width:100vmin;height:100vmin;position:relative">${svg}${q.has('guide') && !q.has('r') ? guide : ''}</div></div>`;
+  } else {
+    root.innerHTML =
+      `<nav>${themes.map((t) => `<a href="?view=scene&theme=${t}">${t} scene</a><a href="?view=oasis&theme=${t}&guide">${t} oasis</a>`).join('')}</nav>` +
+      `<div class="grid">` +
+      themes
+        .map(
+          (t) =>
+            `<figure><div class="scene">${sceneSVG(t)}</div><figcaption>${t} · desktop</figcaption></figure>` +
+            `<figure><div class="phone">${sceneSVG(t)}</div><figcaption>${t} · phone</figcaption></figure>` +
+            `<figure><div class="oasis">${oasisSVG(t)}${guide}</div><figcaption>${t} · oasis (+ overlay zones)</figcaption></figure>`
+        )
+        .join('') +
+      `</div>`;
+  }
+  const s = sceneSVG(theme);
+  const o = oasisSVG(theme);
+  console.log('scene bytes', s.length, 'oasis bytes', o.length);
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Oasis Derby - characters gallery</title>
+<style>
+  @font-face { font-family: Nunito; src: url(../fonts/nunito-latin.woff2) format('woff2'); font-weight: 200 1000; }
+  body { margin: 0; font: 12px/1.25 Nunito, system-ui, sans-serif; background: #6d6272; }
+  .strip { padding: 8px 14px 10px; }
+  .parch { background: #fbe3a6; color: #3b2412; }
+  .dark { background: #1c1826; color: #f3e6c8; }
+  h2 { font-size: 13px; margin: 0 0 6px; font-weight: 800; }
+  .row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+  .row + .row { margin-top: 4px; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 160px; }
+  .lbl { font-size: 11px; white-space: nowrap; }
+  .small { display: flex; gap: 4px; align-items: flex-end; justify-content: center; }
+  .art { display: inline-block; }
+  .art svg { display: block; }
+  .box { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  canvas { image-rendering: pixelated; display: block; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script type="module">
+import { CHARACTERS, portraitSVG, pharaohMaskSVG, crowdSVG } from '../js/art/characters.js';
+
+const q = new URLSearchParams(location.search);
+const view = q.get('view') || 'all';
+const app = document.getElementById('app');
+const sized = (s, w, h = w) =>
+  `<span class="art" style="width:${w}px;height:${h}px">${s.replace('<svg ', `<svg width="${w}" height="${h}" `)}</span>`;
+const labelled = (html, text) => `<div class="box">${html}<span class="lbl">${text}</span></div>`;
+
+function strip(cls, title) {
+  const cells = (fn) => '<div class="row">' + CHARACTERS.map((c) => `<div class="cell">${fn(c)}</div>`).join('') + '</div>';
+  return (
+    `<section class="strip ${cls}"><h2>${title}</h2>` +
+    cells((c) => sized(portraitSVG(c.id), 160) + `<span class="lbl">${c.name} - ${c.title}</span>`) +
+    cells((c) => sized(portraitSVG(c.id, { bg: false }), 160)) +
+    cells((c) =>
+      `<div class="small">${sized(portraitSVG(c.id), 48)}${sized(portraitSVG(c.id, { bg: false }), 48)}` +
+      `${sized(portraitSVG(c.id), 32)}${sized(portraitSVG(c.id, { bg: false }), 32)}</div>` +
+      `<span class="lbl">48 / 48 no bg / 32 / 32 no bg</span>`) +
+    '</section>'
+  );
+}
+
+function extras(cls) {
+  return (
+    `<section class="strip ${cls}"><h2>Starting-player mask and spectator tiles</h2><div class="row" style="align-items:flex-end;gap:18px">` +
+    labelled(sized(pharaohMaskSVG(), 160), 'mask 160') +
+    labelled(sized(pharaohMaskSVG(), 48), '48') +
+    labelled(sized(pharaohMaskSVG(), 28), '28') +
+    labelled(sized(crowdSVG('cheer'), 300, 150), 'crowd cheer 300') +
+    labelled(sized(crowdSVG('boo'), 300, 150), 'crowd boo 300') +
+    labelled(sized(crowdSVG('cheer'), 120, 60), 'cheer 120') +
+    labelled(sized(crowdSVG('boo'), 120, 60), 'boo 120') +
+    '</div></section>'
+  );
+}
+
+async function raster(s, px, scale) {
+  const img = new Image();
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s.replace('<svg ', `<svg width="${px}" height="${px}" `));
+  await img.decode();
+  const c = document.createElement('canvas');
+  c.width = c.height = px;
+  c.getContext('2d').drawImage(img, 0, 0, px, px);
+  c.style.width = c.style.height = px * scale + 'px';
+  return c;
+}
+
+async function pixView() {
+  for (const [cls, bg] of [['parch', true], ['dark', false]]) {
+    const sec = document.createElement('section');
+    sec.className = 'strip ' + cls;
+    sec.innerHTML = `<h2>Actual 32 px rasters, magnified x5 (${bg ? 'with bg' : 'no bg'}) + real size</h2>`;
+    const row = document.createElement('div');
+    row.className = 'row';
+    for (const c of CHARACTERS) {
+      const box = document.createElement('div');
+      box.className = 'box';
+      box.append(await raster(portraitSVG(c.id, { bg }), 32, 5));
+      box.insertAdjacentHTML('beforeend', `<div class="small">${sized(portraitSVG(c.id, { bg }), 32)}${sized(portraitSVG(c.id, { bg }), 48)}</div><span class="lbl">${c.name}</span>`);
+      row.append(box);
+    }
+    const mbox = document.createElement('div');
+    mbox.className = 'box';
+    mbox.append(await raster(pharaohMaskSVG(), 28, 5));
+    mbox.insertAdjacentHTML('beforeend', `${sized(pharaohMaskSVG(), 28)}<span class="lbl">mask 28</span>`);
+    row.append(mbox);
+    sec.append(row);
+    app.append(sec);
+  }
+}
+
+if (view === 'zoom') {
+  const ids = (q.get('ids') || CHARACTERS.map((c) => c.id).join(',')).split(',');
+  const size = Number(q.get('size') || 320);
+  app.innerHTML =
+    `<section class="strip parch"><div class="row">` +
+    ids.map((id) => labelled(sized(portraitSVG(id), size), id) + labelled(sized(portraitSVG(id, { bg: false }), size), id + ' no bg')).join('') +
+    '</div></section>';
+} else if (view === 'pix') {
+  pixView();
+} else if (view === 'extras') {
+  const size = Number(q.get('size') || 420);
+  app.innerHTML =
+    `<section class="strip parch"><div class="row">` +
+    labelled(sized(pharaohMaskSVG(), size), 'mask') +
+    labelled(sized(crowdSVG('cheer'), size * 1.4, size * 0.7), 'cheer') +
+    labelled(sized(crowdSVG('boo'), size * 1.4, size * 0.7), 'boo') +
+    '</div></section>';
+} else {
+  app.innerHTML =
+    strip('parch', 'Portraits on parchment (#fbe3a6): 160 px with bg, 160 px without bg, then 48 / 32 px') +
+    strip('dark', 'Portraits on dark (#1c1826)') +
+    extras('parch') +
+    extras('dark');
+}
+</script>
+</body>
+</html>
