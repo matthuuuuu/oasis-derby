@@ -1302,7 +1302,8 @@ p {
   position: absolute;
   height: 2.6%;
   border-radius: 3px;
-  background: repeating-conic-gradient(#2b1d12 0% 25%, #fff6e0 0% 50%) 0 0 / 12px 12px;
+  /* exactly two rows of squares at any board size: one 2×2 tile is the line's full height, 15 squares across */
+  background: repeating-conic-gradient(#2b1d12 0% 25%, #fff6e0 0% 50%) 0 0 / 13.3333% 100%;
   box-shadow: 0 0 0 2px #2b1d12;
   z-index: 2;
 }
@@ -2639,6 +2640,13 @@ button.pile:active:not(:disabled) {
 .howto-art > * {
   flex: none;
 }
+/* three pictures in equal columns: the middle one sits exactly in the centre */
+.howto-art.even-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  justify-items: center;
+  align-items: center;
+}
 .howto-art .cam {
   display: block;
   width: 76px;
@@ -3100,11 +3108,25 @@ button.pile:active:not(:disabled) {
 .game-modes.readonly {
   grid-template-columns: 1fr;
 }
+/* laid out like the action cards: picture, title and text all centred */
+.game-mode {
+  align-items: center;
+  text-align: center;
+}
+.game-mode h3 {
+  justify-content: center;
+}
 .game-mode .mode-art {
   position: relative;
   display: block;
   height: 58px;
   margin-bottom: 6px;
+}
+.game-mode.classic .mode-art {
+  width: 70px; /* the pyramid */
+}
+.game-mode.crazier .mode-art {
+  width: 104px; /* the loop and both crazy camels */
 }
 .game-mode .mode-art .pyr,
 .game-mode .mode-art .loop {

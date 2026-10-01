@@ -94,9 +94,9 @@ const PAGES = [
   },
   {
     title: 'The finish line',
-    art: () => html`<div class="howto-art" style="align-items:center;gap:16px">
+    art: () => html`<div class="howto-art even-3">
       <${Sticker} name="trophy" size=${64} />
-      <div style="width:120px"><${CamelSprite} camel="green" /></div>
+      <span style="transform:translateX(-4px)"><${CamelSprite} camel="green" /></span>
       <${Sticker} name="flag" size=${64} />
     </div>`,
     points: [

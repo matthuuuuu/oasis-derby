@@ -308,24 +308,30 @@ export const STICKERS = {
         `<path d="M40,4 l1,2.6 2.6,1 -2.6,1 -1,2.6 -1,-2.6 -2.6,-1 2.6,-1 Z" fill="#fffbe0" stroke="${INK}" stroke-width="1" stroke-linejoin="round"/>`
     ),
 
-  /** A chequered finish flag waving from a wooden pole. */
+  /**
+   * A chequered finish flag on a wooden pole, in the finish line's own chequers: 4 rows of crisp
+   * squares. The cloth ripples column by column, so every square stays whole.
+   */
   flag: () => {
-    const id = nextId('flg');
-    const cloth = 'M12.5,8.5 C18,5.5 23.5,11.5 29.5,8.5 C34,6.3 37.6,6.6 41,8.4 V27 C37.6,25.2 34,24.9 29.5,27.1 C23.5,30.1 18,24.1 12.5,27.1 Z';
-    let squares = '';
-    for (let r = 0; r < 5; r++) {
-      for (let c = 0; c < 6; c++) {
+    const x0 = 12.6, y0 = 8, s = 4.75, rows = 4, cols = 6;
+    const wave = [0, -1.2, -1.5, -0.5, 0.9, 1.3, 0.6]; // vertical shift of each column edge
+    const X = (c) => (x0 + c * s).toFixed(2);
+    const Y = (c, r) => (y0 + wave[c] + r * s).toFixed(2);
+    let dark = '';
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
         if ((r + c) % 2) continue;
-        // each column rides the wave a little, so the chequers ripple with the cloth
-        const lift = [0, -1.6, 0.6, 1.6, -0.6, -1.2][c];
-        squares += `<rect x="${(12.5 + c * 4.75).toFixed(2)}" y="${(5 + r * 4.75 + lift).toFixed(2)}" width="4.75" height="4.75"/>`;
+        dark += `M${X(c)},${Y(c, r)} L${X(c + 1)},${Y(c + 1, r)} L${X(c + 1)},${Y(c + 1, r + 1)} L${X(c)},${Y(c, r + 1)} Z`;
       }
     }
+    let top = '', bottom = '';
+    for (let c = 0; c <= cols; c++) top += `${c ? 'L' : 'M'}${X(c)},${Y(c, 0)} `;
+    for (let c = cols; c >= 0; c--) bottom += `L${X(c)},${Y(c, rows)} `;
+    const cloth = `${top}${bottom}Z`;
     return wrap48(
-      `<defs><clipPath id="${id}"><path d="${cloth}"/></clipPath></defs>` +
-        `<ellipse cx="11" cy="44.4" rx="6" ry="1.8" fill="${INK}" opacity=".18"/>` +
+      `<ellipse cx="11" cy="44.4" rx="6" ry="1.8" fill="${INK}" opacity=".18"/>` +
         `<path d="${cloth}" fill="#fff6e0"/>` +
-        `<g clip-path="url(#${id})" fill="#2b1d12">${squares}</g>` +
+        `<path d="${dark}" fill="#2b1d12"/>` +
         `<path d="${cloth}" fill="none" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/>` +
         `<rect x="9" y="6" width="3.6" height="38" rx="1.8" fill="#a4552a" stroke="${INK}" stroke-width="2"/>` +
         `<circle cx="10.8" cy="5.4" r="2.9" fill="#f2b84b" stroke="${INK}" stroke-width="1.8"/>`
