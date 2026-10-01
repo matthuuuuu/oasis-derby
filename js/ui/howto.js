@@ -68,8 +68,6 @@ const PAGES = [
       <div style="width:70px"><${Ticket} color="blue" value=${5} /></div>
       <div style="width:70px"><${Ticket} color="red" value=${3} /></div>
       <div style="width:70px"><${Ticket} color="green" value=${2} /></div>
-      <${Die} die="yellow" value=${3} style="width:42px" />
-      <${Die} die="purple" value=${1} style="width:42px" />
     </div>`,
     points: [
       html`A <b>leg</b> ends as soon as 5 of the 6 dice have left the pyramid.`,
