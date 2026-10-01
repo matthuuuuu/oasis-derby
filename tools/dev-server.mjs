@@ -9,7 +9,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const port = Number(process.env.PORT) || 5318; // the Crazier Camels copy runs next to the main game (5317)
+const port = Number(process.env.PORT) || 5317;
 
 const types = {
   '.html': 'text/html; charset=utf-8',

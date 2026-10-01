@@ -11,7 +11,7 @@
 <div id="app"></div>
 <script type="module">
   // Development "storybook": renders real screens with hand-made game states.
-  //   &mode=classic for the rulebook game (Crazier Camels otherwise)
+  //   &mode=crazier for Crazier Camels (the rulebook game otherwise)
   //   ?case=game | game8 | stacks | leg | finale | finish | howto[&page=N] | setup | loop | tiles   &theme=sand|sunset|night
   import { html, render } from '../vendor/preact-htm.js';
   import { createGame, applyAction } from '../js/engine/game.js';
@@ -35,7 +35,7 @@
   ];
   const players = (n) => names.slice(0, n).map(([name, character, bot], i) => ({ id: `p${i}`, name, character, bot: bot || null }));
 
-  function midGame(n) {
+  function midGame(n, mode = q.get('mode')) {
     let s = createGame({ players: players(n), seed: 11, startPlayer: 0 });
     s.stacks = { 3: ['green'], 5: ['yellow', 'blue', 'red'], 6: ['purple'], 12: ['white'], 14: ['black'] };
     s.tiles = { 8: { owner: 'p1', side: 'cheer' }, 10: { owner: 'p2', side: 'boo' } };
@@ -48,8 +48,8 @@
     s.rolled = [{ die: 'blue', value: 2 }, { die: 'grey', value: 1, shown: 'black' }];
     s.diceLeft = ['yellow', 'green', 'red', 'purple'];
     s.pyramidLeft = 3;
-    if (q.get('mode') !== 'classic') {
-      // Crazier Camels (the default in this copy): every roll also rolled the grey die beside the pyramid
+    if (mode === 'crazier') {
+      // Crazier Camels: every roll also rolled the grey die in the little black-and-white pyramid
       s.mode = 'crazier';
       s.rolled = [
         { die: 'blue', value: 2, shown: null, crazy: { value: 1, shown: 'black', camel: 'black' } },
@@ -122,7 +122,7 @@
   if (c === 'loop') {
     // Crazier Camels: Ruby (a bot) rolls purple 1, then the grey die shows white 3 — White, carrying Red,
     // runs 2 → 1, drops Red off on space 1 and loops round to 15.   &at=ms (when the roll arrives)
-    const s = midGame(4);
+    const s = midGame(4, 'crazier');
     s.turn = 1;
     s.stacks = { 1: ['yellow'], 2: ['white', 'red'], 5: ['blue', 'purple'], 6: ['green'], 11: ['black'] };
     s.tiles = {};

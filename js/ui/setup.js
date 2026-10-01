@@ -104,7 +104,7 @@ export function LocalSetup({ profile, onBack, onStart, onHowTo }) {
     return out;
   });
   const [sheet, setSheet] = useState(null);
-  const [mode, setModeState] = useState(() => getPrefs().mode || 'crazier');
+  const [mode, setModeState] = useState(() => getPrefs().mode || 'classic');
   const setMode = (m) => {
     setModeState(m);
     setPrefs({ mode: m });
@@ -295,7 +295,7 @@ export function Lobby({ session, onLeave, onHowTo }) {
 
     <section class="card">
       <h2 class="section-title" style="margin:0 0 10px">Game mode</h2>
-      <${ModePicker} value=${lobby.mode || 'crazier'} onChange=${isHost ? (m) => session.setMode(m) : null} />
+      <${ModePicker} value=${lobby.mode || 'classic'} onChange=${isHost ? (m) => session.setMode(m) : null} />
     </section>
 
     ${isHost

@@ -18,7 +18,7 @@ import { CHARACTERS } from '../art/characters.js';
 import { SessionBase, BotDriver } from './session.js';
 import { saveJSON, getPrefs, setPrefs } from '../ui/prefs.js';
 
-const PREFIX = 'oasis-derby-crazier-v1-'; // separate from the classic game's rooms
+const PREFIX = 'oasis-derby-v1-';
 const PROTOCOL = 1;
 const CODE_ALPHABET = 'BCDFGHJKLMNPQRSTVWXZ';
 export const HOST_SAVE_KEY = 'oasis-derby:host';
@@ -100,7 +100,7 @@ export class HostSession extends SessionBase {
     this.takeover = new Set(resume?.takeover || []);
     this.conns = new Map(); // DataConnection -> { seatId, lastSeen }
     this.seatSeq = resume?.seatSeq || 1;
-    this.mode = resume?.mode || getPrefs().mode || 'crazier';
+    this.mode = resume?.mode || getPrefs().mode || 'classic';
     this.myIds = this.seats.some((s) => s.id === 'h') ? ['h'] : [];
     this.bots = new BotDriver(this, (p) => this.botLevel(p.id));
     this.wake = new WakeLock();

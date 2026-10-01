@@ -11,7 +11,7 @@ const defaults = {
   sound: true,
   odds: false,
   fast: false,
-  mode: 'crazier',
+  mode: 'classic', // or 'crazier' (Crazier Camels); the setup screen remembers the last pick
   clientId: '',
 };
 
