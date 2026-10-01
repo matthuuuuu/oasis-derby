@@ -2640,12 +2640,11 @@ button.pile:active:not(:disabled) {
 .howto-art > * {
   flex: none;
 }
-/* three pictures in equal columns: the middle one sits exactly in the centre */
+/* three pictures close together (like page 2's icons); the two outer ones are the same width,
+   so the middle one sits exactly in the centre */
 .howto-art.even-3 {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  justify-items: center;
   align-items: center;
+  gap: 14px;
 }
 .howto-art .cam {
   display: block;
