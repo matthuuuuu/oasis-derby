@@ -2384,6 +2384,7 @@ button.pile:active:not(:disabled) {
   display: flex;
   gap: 12px;
   justify-content: center;
+  align-items: flex-end; /* both camels stand on the same ground line */
   margin: 4px 0 14px;
 }
 .podium-mini .place {
@@ -2398,7 +2399,8 @@ button.pile:active:not(:disabled) {
   width: 96px;
 }
 .podium-mini .place.second .cam {
-  width: 76px;
+  width: 68px;
+  margin-bottom: 2px; /* the smaller sprite has less room under its feet: lift it onto the same line */
 }
 .podium-mini .place .cam svg {
   width: 100%;
