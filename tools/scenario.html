@@ -11,7 +11,7 @@
 <div id="app"></div>
 <script type="module">
   // Development "storybook": renders real screens with hand-made game states.
-  //   ?case=game | game8 | stacks | leg | finale | finish | howto   &theme=sand|sunset|night
+  //   ?case=game | game8 | stacks | leg | finale | finish | howto | tiles   &theme=sand|sunset|night
   import { html, render } from '../vendor/preact-htm.js';
   import { createGame, applyAction } from '../js/engine/game.js';
   import { GameScreen } from '../js/ui/game.js';
@@ -19,6 +19,8 @@
   import { HowToSheet } from '../js/ui/howto.js';
   import { sceneSVG } from '../js/art/scenery.js';
   import { setPrefs } from '../js/ui/prefs.js';
+  import { SpectatorTile } from '../js/ui/common.js';
+  import { CHARACTERS } from '../js/art/characters.js';
 
   const q = new URLSearchParams(location.search);
   const theme = q.get('theme') || 'sand';
@@ -155,6 +157,10 @@
     render(html`<${FinishBetSheet} state=${s} me=${s.players[0]} needsGate=${q.has('gate')} onConfirm=${() => {}} onClose=${() => {}} />`, root);
   }
   if (c === 'howto') render(html`<${HowToSheet} onClose=${() => {}} />`, root);
+  if (c === 'tiles') {
+    // every character's spectator tile, both sides, at board size and big
+    render(html`<div style="padding:12px;display:grid;gap:10px;background:var(--bg,#f6e7c1)">${[46, 130].map((w) => html`<div style="display:flex;flex-wrap:wrap;gap:8px">${CHARACTERS.flatMap((ch) => ['cheer', 'boo'].map((side) => html`<div style=${`width:${w}px`}><${SpectatorTile} side=${side} character=${ch.id} /></div>`))}</div>`)}</div>`, root);
+  }
 </script>
 </body>
 </html>

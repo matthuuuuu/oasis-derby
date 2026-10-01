@@ -1599,27 +1599,32 @@ p {
   width: 100%;
   height: auto;
 }
-/* owner's face top-left, +1/−1 top-right: two equal circles */
+/* owner's face top-left, +1/−1 top-right: two equal circles. The outline is a real border
+   (not a separate shadow ring) so nothing from the tile can peek through between them. */
 .stile .who,
 .stile .val {
   position: absolute;
-  top: 7%;
-  width: 40%;
+  top: 5%;
+  width: 44%;
   aspect-ratio: 1;
+  box-sizing: border-box;
+  border: 2px solid #3b2412;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px #3b2412;
 }
 .stile .who {
-  left: 7%;
+  left: 5%;
+  overflow: hidden;
+  background: #3b2412;
 }
+/* a touch bigger than the hole so the portrait runs right up under the outline */
 .stile .who svg {
   display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
+  width: 106%;
+  height: 106%;
+  margin: -3%;
 }
 .stile .val {
-  right: 7%;
+  right: 5%;
   display: flex;
   align-items: center;
   justify-content: center;
