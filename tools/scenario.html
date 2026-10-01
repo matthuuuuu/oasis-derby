@@ -15,7 +15,7 @@
   import { html, render } from '../vendor/preact-htm.js';
   import { createGame, applyAction } from '../js/engine/game.js';
   import { GameScreen } from '../js/ui/game.js';
-  import { LegResultsSheet, FinaleSheet, FinishBetSheet } from '../js/ui/modals.js';
+  import { LegResultsSheet, FinaleSheet, FinishBetSheet, MenuSheet } from '../js/ui/modals.js';
   import { HowToSheet } from '../js/ui/howto.js';
   import { sceneSVG } from '../js/art/scenery.js';
   import { setPrefs } from '../js/ui/prefs.js';
@@ -77,7 +77,12 @@
 
   const root = document.getElementById('app');
   const c = q.get('case') || 'game';
-  if (c === 'game') render(html`<${GameScreen} session=${fake(midGame(4))} onExit=${() => {}} />`, root);
+  if (c === 'game') {
+    const s = midGame(4);
+    if (q.get('empty')) s.legStacks[q.get('empty')] = []; // e.g. &empty=blue: that camel's tickets are sold out
+    render(html`<${GameScreen} session=${fake(s)} onExit=${() => {}} />`, root);
+  }
+  if (c === 'menu') render(html`<${MenuSheet} session=${fake(midGame(3))} onClose=${() => {}} onRules=${() => {}} onLeave=${() => {}} />`, root);
   if (c === 'game8') render(html`<${GameScreen} session=${fake(midGame(8))} onExit=${() => {}} />`, root);
   if (c === 'stacks') {
     const s = midGame(3);

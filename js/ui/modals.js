@@ -116,7 +116,7 @@ export function FinaleSheet({ state, canRematch, onRematch, onLobby, onExit, onC
   return html`<${Sheet} wide title="The race is over!" onClose=${onClose}>
     <div class="finale-hero">
       <div class="winner-camel"><${CamelSprite} camel=${f.winner} shadow=${false} /></div>
-      <h2 class="title-xl no-shadow" style="font-size:34px;margin-top:6px">${camelName(f.winner)} wins!</h2>
+      <h2 class="title-xl" style="font-size:34px;margin-top:6px">${camelName(f.winner)} wins!</h2>
       <p class="muted" style="font-weight:800;margin-top:6px">…and <${CamelDot} camel=${f.loser} />${camelName(f.loser)} trotted in last.</p>
     </div>
 
@@ -181,7 +181,7 @@ export function FinishBetSheet({ state, me, initialPile = 'winner', needsGate, o
       </button>
     </div>
     <p class="muted" style="font-weight:800;margin:14px 0 4px;font-size:14px">Pick a card from your hand (one per camel):</p>
-    <div class="card-row">
+    <div class="card-row finish-hand">
       ${RACING_CAMELS.map((c) => {
         const inHand = hand.includes(c);
         return html`<${FinishCard}

@@ -311,17 +311,6 @@ p {
 .title-xl {
   font-size: clamp(34px, 8vw, 44px);
   color: var(--heading);
-  text-shadow:
-    -2px -2px 0 var(--heading-outline),
-    2px -2px 0 var(--heading-outline),
-    -2px 2px 0 var(--heading-outline),
-    2px 2px 0 var(--heading-outline),
-    0 2px 0 var(--heading-outline),
-    0 -2px 0 var(--heading-outline),
-    3px 5px 0 var(--heading-shadow);
-}
-.title-xl.no-shadow {
-  text-shadow: none;
 }
 .section-title {
   font-size: 22px;
@@ -498,6 +487,8 @@ p {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  line-height: 1.1;
+  text-align: center;
   min-height: 50px;
   padding: 0 22px;
   border-radius: 999px;
@@ -614,18 +605,23 @@ p {
 /* ---------- Character picker ---------- */
 .char-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
   margin-top: 14px;
 }
 @media (min-width: 460px) {
   .char-grid {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 }
 .char-option {
   position: relative;
-  aspect-ratio: 1;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  align-self: start;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 3px solid transparent;
   padding: 2px;
@@ -1685,6 +1681,7 @@ p {
   border-style: dashed;
   border-color: var(--line-strong);
   justify-content: center;
+  text-align: center;
   color: var(--faint);
   font-weight: 900;
   font-size: 12px;
@@ -1834,6 +1831,31 @@ button.fcard:not(:disabled):hover {
   justify-content: center;
   padding: 6px 0;
 }
+/* the five race-bet cards on phones: three on top (blue, yellow, green), two below (red, purple) */
+@media (max-width: 600px) {
+  .card-row.finish-hand {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    justify-items: center;
+    column-gap: 0;
+    row-gap: 12px;
+  }
+  .finish-hand > :nth-child(1) {
+    grid-column: 1 / span 2;
+  }
+  .finish-hand > :nth-child(2) {
+    grid-column: 3 / span 2;
+  }
+  .finish-hand > :nth-child(3) {
+    grid-column: 5 / span 2;
+  }
+  .finish-hand > :nth-child(4) {
+    grid-column: 2 / span 2;
+  }
+  .finish-hand > :nth-child(5) {
+    grid-column: 4 / span 2;
+  }
+}
 
 /* ---------- Side panel ---------- */
 .panel {
@@ -1924,7 +1946,7 @@ button.fcard:not(:disabled):hover {
 
 .ticket-bar {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 }
 
