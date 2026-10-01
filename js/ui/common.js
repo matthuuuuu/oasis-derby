@@ -159,7 +159,7 @@ export function CharacterPicker({ value, onChange, taken = [] }) {
 
 function CharPortrait({ id }) {
   const svg = useMemo(() => portraitSVG(id), [id]);
-  return html`<${Raw} svg=${svg} tag="span" style="display:block;width:100%;height:100%" />`;
+  return html`<${Raw} svg=${svg} tag="span" class="char-face" />`;
 }
 
 export function ThemeDots() {
