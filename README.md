@@ -124,7 +124,6 @@ subdomain such as `camels.your-site.com`, or simply link to the Vercel URL.
 | How clever the bots are | `js/ai/bot.js` |
 | How fast the bots take their turns | `js/net/session.js` (`BOT_PACE`: bigger = slower) |
 | How long you see a bot's choice "hovered" before it happens | `js/ui/game.js` (`PICK_MS`) |
-| The white-glove mouse cursor | `assets/cursors/glove-source.png` is the picture; after changing it run `python tools/make-cursors.py` (needs Pillow) to rebuild `glove.png` |
 | Outline thickness of cards, buttons and panels | `css/styles.css` (`--bw`) |
 | Camel size on the board, and how piles of camels look | `js/ui/stacking.js` (`CAMEL_SIZE`, `STACK_STYLE`) |
 | The camels | `js/art/camels.js` |

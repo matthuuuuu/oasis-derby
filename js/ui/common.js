@@ -195,7 +195,7 @@ export function Switch({ checked, onChange, label }) {
 }
 
 /** Bottom sheet on phones, centred dialog on bigger screens. */
-export function Sheet({ title, subtitle, onClose, children, wide = false, dismissable = true }) {
+export function Sheet({ title, subtitle, onClose, children, wide = false, dismissable = true, class: cls = '' }) {
   const ref = useRef();
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && dismissable && onClose?.();
@@ -204,7 +204,7 @@ export function Sheet({ title, subtitle, onClose, children, wide = false, dismis
     return () => window.removeEventListener('keydown', onKey);
   }, []);
   return html`<div class="overlay" onClick=${(e) => e.target === e.currentTarget && dismissable && onClose?.()}>
-    <div class=${`sheet ${wide ? 'wide' : ''}`} role="dialog" aria-modal="true" aria-label=${title} tabindex="-1" ref=${ref}>
+    <div class=${`sheet ${wide ? 'wide' : ''} ${cls}`} role="dialog" aria-modal="true" aria-label=${title} tabindex="-1" ref=${ref}>
       <div class="sheet-grip"></div>
       ${title &&
       html`<div class="sheet-head">

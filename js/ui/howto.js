@@ -121,18 +121,23 @@ const PAGES = [
 
 export function HowToSheet({ onClose, startPage = 0 }) {
   const [page, setPage] = useState(startPage);
-  const p = PAGES[page];
   const last = page === PAGES.length - 1;
-  return html`<${Sheet} title="How to play" subtitle=${`${page + 1} of ${PAGES.length}`} onClose=${onClose}>
-    <div class="howto-page" key=${page}>
-      ${p.art()}
-      <h3>${p.title}</h3>
-      <ul>${p.points.map((t) => html`<li>${t}</li>`)}</ul>
+  // All six pages are drawn in the same spot (only the current one visible), so the sheet is always
+  // as tall as the longest page: the same size on every page, with Back / Next never moving.
+  return html`<${Sheet} title="How to play" subtitle=${`${page + 1} of ${PAGES.length}`} onClose=${onClose} class="howto-sheet">
+    <div class="howto-pages">
+      ${PAGES.map(
+        (p, i) => html`<div class=${`howto-page ${i === page ? 'on' : ''}`} aria-hidden=${i === page ? undefined : 'true'}>
+          ${p.art()}
+          <h3>${p.title}</h3>
+          <ul>${p.points.map((t) => html`<li>${t}</li>`)}</ul>
+        </div>`
+      )}
     </div>
-    <div class="dots-nav" style="margin-top:14px">${PAGES.map((_, i) => html`<i class=${i === page ? 'on' : ''}></i>`)}</div>
+    <div class="dots-nav">${PAGES.map((_, i) => html`<i class=${i === page ? 'on' : ''}></i>`)}</div>
     <div class="sheet-foot">
-      <button class="btn ghost" disabled=${page === 0} onClick=${() => setPage(page - 1)}><${Icon} name="arrowLeft" /> Back</button>
-      <button class="btn" onClick=${() => (last ? onClose() : setPage(page + 1))}>${last ? "Let's race!" : 'Next'} ${!last && html`<${Icon} name="arrowRight" />`}</button>
+      <button class="btn ghost small" disabled=${page === 0} onClick=${() => setPage(page - 1)}><${Icon} name="arrowLeft" /> Back</button>
+      <button class="btn small" onClick=${() => (last ? onClose() : setPage(page + 1))}>${last ? "Let's race!" : 'Next'} ${!last && html`<${Icon} name="arrowRight" />`}</button>
     </div>
   </${Sheet}>`;
 }

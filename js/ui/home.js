@@ -125,8 +125,10 @@ export function Home({ initialCode = '', saved, busy, onHowTo, onLocal, onHost, 
       </form>
     </section>
 
-    <p class="muted" style="text-align:center;font-size:13px;font-weight:700;padding:0 8px">
-      A fan-made school project inspired by the board game Camel Up. 2–8 riders · works on phones and computers.
+    <p class="muted fineprint">
+      <span>A fan-made project inspired by the board game Camel Up.</span>
+      <span>Works on mobile and in browser</span>
+      <span>2–8 players</span>
     </p>
     <${InstallBanner} />
   </main>`;

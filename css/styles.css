@@ -208,24 +208,16 @@ button {
   background: none;
   padding: 0;
 }
-/* ---------- the white-glove mouse cursor ----------
-   Your glove picture (assets/cursors/glove-source.png), used everywhere — on buttons and
-   text boxes too. tools/make-cursors.py turns it into glove.png; the hotspot is the fingertip. */
-html,
-button,
-button:disabled,
+/* the computer's normal mouse pointer: the usual hand on things you can click */
+button:not(:disabled),
 a[href],
 summary,
 label,
 select,
-input,
-textarea,
 [role='button'],
 [role='switch'],
 .track-cell.pickable {
-  cursor: url(../assets/cursors/glove.png) 0 3, auto;
-  cursor: -webkit-image-set(url(../assets/cursors/glove.png) 1x, url(../assets/cursors/glove@2x.png) 2x) 0 3, auto;
-  cursor: image-set(url(../assets/cursors/glove.png) 1x, url(../assets/cursors/glove@2x.png) 2x) 0 3, auto;
+  cursor: pointer;
 }
 :focus-visible {
   outline: 3px solid var(--focus);
@@ -2621,19 +2613,60 @@ button.pile:active:not(:disabled) {
 }
 
 /* ---------- How to play ---------- */
+/* All six pages share one grid cell, so the box is always as tall as the longest page:
+   every page is the same size and Back / Next stay put. */
+.howto-pages {
+  display: grid;
+}
+.howto-pages > .howto-page {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+.howto-pages > .howto-page.on {
+  visibility: visible;
+}
+.howto-sheet .sheet-head {
+  margin-bottom: 10px;
+}
+/* "1 of 6" on the same line as "How to play" */
+.howto-sheet .sheet-head > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.howto-sheet .sheet-head h2 {
+  flex: none;
+}
+.howto-sheet .dots-nav {
+  margin-top: 10px;
+}
+.howto-sheet .sheet-foot {
+  margin-top: 12px;
+}
+/* phones: a slightly shorter picture box and text, so the longest page fits with room to spare */
+@media (max-width: 480px) {
+  .howto-sheet .howto-art {
+    min-height: 92px;
+  }
+  .howto-sheet .howto-page h3 {
+    font-size: 19px;
+  }
+  .howto-sheet .howto-page ul {
+    font-size: 14.5px;
+  }
+}
 .howto-page {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 360px;
+  gap: 9px;
 }
 .howto-art {
   display: flex;
   justify-content: center;
   align-items: flex-end;
   gap: 8px;
-  min-height: 130px;
-  padding: 10px;
+  min-height: 108px;
+  padding: 8px;
   border-radius: 18px;
   background: var(--card-2);
 }
@@ -2674,7 +2707,7 @@ button.pile:active:not(:disabled) {
   width: 100%;
 }
 .howto-page h3 {
-  font-size: 22px;
+  font-size: 20px;
   color: var(--heading);
 }
 .howto-page ul {
@@ -2682,7 +2715,9 @@ button.pile:active:not(:disabled) {
   padding-left: 20px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  font-size: 15px;
+  line-height: 1.35;
   font-weight: 650;
 }
 .howto-page li::marker {
@@ -3166,4 +3201,17 @@ button.pile:active:not(:disabled) {
   left: auto;
   top: auto;
   width: 96px;
+}
+
+/* the three-line note at the bottom of the home screen: each line stays on one line, even on small phones */
+.fineprint {
+  text-align: center;
+  font-size: min(13px, 3.1vw);
+  font-weight: 700;
+  line-height: 1.5;
+  padding: 0 4px;
+}
+.fineprint > span {
+  display: block;
+  white-space: nowrap;
 }

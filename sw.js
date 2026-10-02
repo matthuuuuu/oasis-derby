@@ -1,7 +1,7 @@
 // Service worker: lets the game load offline (pass & play works with no
 // internet) and makes it installable. "Network first": when online you always
 // get the newest version you deployed; the cache is only a fallback.
-const CACHE = 'oasis-derby-v5';
+const CACHE = 'oasis-derby-v6';
 const SHELL = [
   './',
   'index.html',
@@ -37,8 +37,6 @@ const SHELL = [
   'fonts/nunito-latin.woff2',
   'assets/icons/icon-192.png',
   'assets/icons/icon-512.png',
-  'assets/cursors/glove.png',
-  'assets/cursors/glove@2x.png',
 ];
 
 self.addEventListener('install', (event) => {
