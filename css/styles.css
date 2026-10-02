@@ -2617,6 +2617,7 @@ button.pile:active:not(:disabled) {
    every page is the same size and Back / Next stay put. */
 .howto-pages {
   display: grid;
+  padding-bottom: 14px; /* even the longest page keeps a little space above the dots */
 }
 .howto-pages > .howto-page {
   grid-area: 1 / 1;
@@ -2643,10 +2644,22 @@ button.pile:active:not(:disabled) {
 .howto-sheet .sheet-foot {
   margin-top: 12px;
 }
-/* phones: a slightly shorter picture box and text, so the longest page fits with room to spare */
+/* the yellow picture box is the same height on every page (as tall as page 3's tickets) */
+.howto-sheet .howto-art {
+  height: 136px;
+  min-height: 0;
+}
+.howto-ticket {
+  width: 70px;
+}
+/* phones: a slightly shorter picture box (still the same on every page), smaller tickets and text,
+   so the longest page fits with room to spare */
 @media (max-width: 480px) {
   .howto-sheet .howto-art {
-    min-height: 92px;
+    height: 106px;
+  }
+  .howto-ticket {
+    width: min(70px, 15.4vw);
   }
   .howto-sheet .howto-page h3 {
     font-size: 19px;

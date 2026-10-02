@@ -1,4 +1,4 @@
-// "How to play" — the rules in two minutes, with pictures.
+// "How to play": the rules in two minutes, with pictures.
 import { html, useState } from '../../vendor/preact-htm.js';
 import { ACTION_ICONS, pyramidSVG, loopArrowSVG } from '../art/tokens.js';
 import { Sheet, Raw, CamelSprite, Ticket, Die, SpectatorTile, Icon, Sticker } from './common.js';
@@ -43,7 +43,7 @@ const PAGES = [
       <${Pile} camels=${['black']} />
     </div>`,
     points: [
-      html`Five <b>racing camels</b> run <b>clockwise</b> around the oasis. Nobody owns a camel — you <b>bet</b> on them.`,
+      html`Five <b>racing camels</b> run <b>clockwise</b> around the oasis. Nobody owns a camel: you <b>bet</b> on them.`,
       html`Two <b>crazy camels</b> (black and white) run the wrong way. You can't bet on them, but they can carry racers backwards!`,
       html`Camels on the same space <b>stack up</b>. A moving camel carries everyone on its back, and the camel on <b>top</b> counts as ahead.`,
       html`The richest rider when the race ends wins.`,
@@ -52,28 +52,28 @@ const PAGES = [
   {
     title: 'On your turn, do ONE thing',
     art: () => html`<div class="howto-art" style="gap:14px;align-items:center">
-      ${['legBet', 'tile', 'roll', 'finishBet'].map((k) => html`<span style="width:58px"><${Raw} svg=${icons[k]} /></span>`)}
+      ${['legBet', 'tile', 'roll', 'finishBet', 'partner'].map((k) => html`<span style="width:min(58px, 13vw)"><${Raw} svg=${icons[k]} /></span>`)}
     </div>`,
     points: [
-      html`<b>1. Take a leg ticket</b> for the camel you think leads when this leg ends. The first ticket pays 5, then 3, 2, 2 — so be early!`,
-      html`<b>2. Place your spectator tile</b> on an empty space. Cheering pushes camels +1, booing −1 — and you earn 1 coin every time a camel lands on it.`,
-      html`<b>3. Roll the pyramid</b>: a random die pops out and that camel moves 1–3 spaces. You get a pyramid ticket worth 1 coin.`,
-      html`<b>4. Bet on the whole race</b>: secretly play a card on the overall <b>winner</b> or overall <b>loser</b>.`,
-      html`With 6+ players there's a 5th action: <b>partner up</b> and share your best ticket for the leg.`,
+      html`<b>1. Take a leg ticket</b> for the camel you think will lead this leg. The first pays 5, then 3, 2, 2, so be early!`,
+      html`<b>2. Place your spectator tile</b> on an empty space: cheer +1 or boo −1. Earn 1 coin when a camel lands on it.`,
+      html`<b>3. Roll the pyramid</b>: a random camel moves 1–3 spaces, and you get a pyramid ticket worth 1 coin.`,
+      html`<b>4. Bet on the whole race</b>: secretly pick the overall <b>winner</b> or <b>loser</b>.`,
+      html`<b>5. Partner up</b> (6+ players only): share your best ticket with another player.`,
     ],
   },
   {
     title: 'Legs and payouts',
     art: () => html`<div class="howto-art" style="gap:10px;align-items:center">
-      <div style="width:70px"><${Ticket} color="blue" value=${5} /></div>
-      <div style="width:70px"><${Ticket} color="red" value=${3} /></div>
-      <div style="width:70px"><${Ticket} color="green" value=${2} /></div>
+      <div class="howto-ticket"><${Ticket} color="blue" value=${5} /></div>
+      <div class="howto-ticket"><${Ticket} color="red" value=${3} /></div>
+      <div class="howto-ticket"><${Ticket} color="green" value=${2} /></div>
     </div>`,
     points: [
       html`A <b>leg</b> ends as soon as 5 of the 6 dice have left the pyramid.`,
       html`Tickets on the <b>leading</b> camel pay what's printed (5, 3 or 2). The <b>2nd</b> camel pays 1. Any other camel <b>costs 1</b>.`,
       html`Each pyramid ticket pays 1. Then everything resets and the next leg begins.`,
-      html`Nobody can drop below 0 coins — if you can't pay, you're let off.`,
+      html`Nobody can drop below 0 coins. If you can't pay, you're let off.`,
     ],
   },
   {
@@ -86,7 +86,7 @@ const PAGES = [
     </div>`,
     points: [
       html`Camels landing on a <b>cheering</b> tile jump 1 more space (on top). On a <b>booing</b> tile they slip back 1 space and slide <b>underneath</b>.`,
-      html`The <b>grey die</b> shows a black or white number — that crazy camel moves backwards.`,
+      html`The <b>grey die</b> shows a black or white number, and that crazy camel moves backwards.`,
       html`But if only one crazy camel is carrying racing camels, <b>that one</b> moves. And if one crazy camel sits right on the other, the <b>top</b> one moves.`,
     ],
   },
@@ -100,7 +100,7 @@ const PAGES = [
     points: [
       html`The moment any camel crosses the finish line, the race ends. There's one last leg scoring.`,
       html`Then the race bets are revealed <b>in the order they were placed</b>. Correct cards pay <b>8, 5, 3, 2</b>, then 1 each. Wrong cards cost 1.`,
-      html`Count your coins — the richest rider wins! A tie means a shared victory.`,
+      html`Count your coins: the richest rider wins! A tie means a shared victory.`,
     ],
   },
   {
