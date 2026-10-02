@@ -334,7 +334,7 @@ export function GameScreen({ session, onExit, onLobby }) {
       <button class="icon-btn" aria-label="Menu" onClick=${() => setModal({ type: 'menu' })}><${Icon} name="menu" /></button>
       <div class="leg-pill"><b>Leg ${shown.leg}</b>${diceLeftIndicator(shown)}</div>
       ${shown.mode === 'crazier' &&
-      html`<div class="leg-pill mode-pill" title="Crazier Camels: a crazy camel moves on every roll and they loop round the board"><${Raw} svg=${LOOP_ICON} class="mode-ico" /> Crazier</div>`}
+      html`<div class="leg-pill mode-pill" title="Crazier Camels: a crazy camel moves on every roll and they loop around the board"><${Raw} svg=${LOOP_ICON} class="mode-ico" /> Crazier</div>`}
       ${session.lobby?.code && html`<div class="leg-pill" title="Room code">Room <b>${session.lobby.code}</b></div>`}
       <span class="spacer"></span>
       ${session.status?.level && session.status.level !== 'ok' &&

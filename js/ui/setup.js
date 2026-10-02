@@ -12,8 +12,8 @@ import { sfx } from './fx.js';
 
 const MODE_ART = { classic: pyramidSVG(), crazier: loopArrowSVG() };
 const MODE_BLURB = {
-  classic: 'The rulebook race. The grey die hides in the pyramid with the others.',
-  crazier: 'The grey die gets its own little pyramid: a crazy camel moves on every roll, and they loop round the board.',
+  classic: 'The rulebook race. The gray die hides in the pyramid with the others.',
+  crazier: 'The gray die gets its own little pyramid: a crazy camel moves on every roll, and they loop around the board.',
 };
 
 /** Classic or Crazier Camels. Without onChange it just shows the choice (online guests). */

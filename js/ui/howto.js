@@ -86,7 +86,7 @@ const PAGES = [
     </div>`,
     points: [
       html`Camels landing on a <b>cheering</b> tile jump 1 more space (on top). On a <b>booing</b> tile they slip back 1 space and slide <b>underneath</b>.`,
-      html`The <b>grey die</b> shows a black or white number, and that crazy camel moves backwards.`,
+      html`The <b>gray die</b> shows a black or white number, and that crazy camel moves backwards.`,
       html`But if only one crazy camel is carrying racing camels, <b>that one</b> moves. And if one crazy camel sits right on the other, the <b>top</b> one moves.`,
     ],
   },
@@ -112,9 +112,9 @@ const PAGES = [
     </div>`,
     points: [
       html`Everything is the same as the classic race, except for the crazy camels.`,
-      html`The <b>grey die</b> isn't in the big pyramid. It has its own little <b>black-and-white pyramid</b>, and is rolled <b>right after every coloured die</b>, so a crazy camel moves on <b>every</b> pyramid roll.`,
-      html`A leg still ends after 5 rolls, so this time <b>all five</b> coloured dice come out.`,
-      html`Crazy camels never leave the board: passing space <b>1</b> they <b>loop round to 16</b> and keep going. Any racing camels they carry that far <b>hop off on space 1</b>.`,
+      html`The <b>gray die</b> isn't in the big pyramid. It has its own little <b>black-and-white pyramid</b>, and is rolled <b>right after every colored die</b>, so a crazy camel moves on <b>every</b> pyramid roll.`,
+      html`A leg still ends after 5 rolls, so this time <b>all five</b> colored dice come out.`,
+      html`Crazy camels never leave the board: passing space <b>1</b> they <b>loop around to 16</b> and keep going. Any racing camels they carry that far <b>hop off on space 1</b>.`,
     ],
   },
 ];

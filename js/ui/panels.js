@@ -288,8 +288,8 @@ export function describe(e, s, secretOk = () => false) {
     case 'roll':
       if (e.die === 'grey') {
         const why = e.reason === 'carrying' ? ' (it carries racers, so it must go)' : e.reason === 'stacked' ? ' (it sits right on the other one)' : '';
-        if (e.side) return html`…then the grey die beside the pyramid: <b>${e.value}</b> ${e.shown} → ${cam(e.camel)} runs backwards${why}.`;
-        return html`${n(e.player)} rolled the grey die: <b>${e.value}</b> ${e.shown} → ${cam(e.camel)} runs backwards${why}.`;
+        if (e.side) return html`…then the little pyramid's gray die: <b>${e.value}</b> ${e.shown} → ${cam(e.camel)} runs backwards${why}.`;
+        return html`${n(e.player)} rolled the gray die: <b>${e.value}</b> ${e.shown} → ${cam(e.camel)} runs backwards${why}.`;
       }
       return html`${n(e.player)} rolled ${cam(e.die)} <b>${e.value}</b>.`;
     case 'move': {
@@ -300,7 +300,7 @@ export function describe(e, s, secretOk = () => false) {
     case 'loop': {
       const list = (cs) => cs.map((c, i) => html`${i ? ', ' : ''}${cam(c)}`);
       const riders = e.unit.slice(1);
-      return html`${cam(e.camel)} loops past the start round to space <b>${e.to}</b>${riders.length ? html` carrying ${list(riders)}` : ''}${
+      return html`${cam(e.camel)} loops past the start around to space <b>${e.to}</b>${riders.length ? html` carrying ${list(riders)}` : ''}${
         e.dropped.length ? html` — ${list(e.dropped)} hopped off on space <b>1</b>` : ''
       }.`;
     }

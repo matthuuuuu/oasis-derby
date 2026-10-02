@@ -310,7 +310,7 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
 
       <div class="finish-line" style="left:80.2%;top:78.7%;width:19.6%" title="Finish line"></div>
       ${view.mode === 'crazier' &&
-      html`<div class="loop-mark" title="Crazier Camels: crazy camels loop from space 1 back round to 16">
+      html`<div class="loop-mark" title="Crazier Camels: crazy camels loop from space 1 back around to 16">
         <${Raw} svg=${loopArrow} />
       </div>`}
 
@@ -326,11 +326,11 @@ export function Board({ view, players, pickSpaces, picked, onPick, canRoll, onRo
           <${Raw} svg=${pyramid} />
         </button>
         ${crazier &&
-        html`<div class=${`crazy-pyramid ${sideShaking ? 'shaking' : ''}`} title="The crazy camels' pyramid: its grey die is rolled after every coloured die">
+        html`<div class=${`crazy-pyramid ${sideShaking ? 'shaking' : ''}`} title="The crazy camels' pyramid: its gray die is rolled after every colored die">
           <${Raw} svg=${crazyPyramid} class="pyr" tag="div" />
           ${view.crazy
             ? html`<${Die} key=${`grey-${view.rolled.length}`} die="grey" value=${view.crazy.value} shown=${view.crazy.shown} popping=${view.crazy.popping} />`
-            : html`<div class="die c-grey resting" aria-label="grey die, not rolled yet this leg"><span></span></div>`}
+            : html`<div class="die c-grey resting" aria-label="gray die, not rolled yet this leg"><span></span></div>`}
         </div>`}
         <div class="huts">
           ${[0, 1, 2, 3, 4].map((i) => {

@@ -78,7 +78,7 @@ export const pyramidArt = pyramidSVG;
 
 export function Die({ die, value, shown, popping = false, style }) {
   const cls = `die c-${die} ${die === 'grey' ? `show-${shown}` : ''} ${popping ? 'popping' : ''}`;
-  const label = die === 'grey' ? `grey die: ${shown} ${value}` : `${die} die: ${value}`;
+  const label = die === 'grey' ? `gray die: ${shown} ${value}` : `${die} die: ${value}`;
   return html`<div class=${cls} style=${style} aria-label=${label}><span>${value}</span></div>`;
 }
 
@@ -182,7 +182,7 @@ export function ThemeDots() {
     setTheme(t);
     sfx.tap();
   };
-  return html`<div class="theme-dots" role="group" aria-label="Colour theme">
+  return html`<div class="theme-dots" role="group" aria-label="Color theme">
     <span class="palette-ico"><${Icon} name="palette" size=${18} /></span>
     ${['sand', 'sunset', 'night'].map(
       (t) => html`<button class=${`theme-dot ${t}`} aria-pressed=${theme === t} aria-label=${`${t} theme`} title=${t} onClick=${() => pick(t)}></button>`

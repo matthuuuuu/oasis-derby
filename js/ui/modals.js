@@ -260,7 +260,7 @@ export function MenuSheet({ session, onClose, onRules, onLeave }) {
         <button class="btn small teal" onClick=${async () => (await copyText(link)) && toast('Link copied!', 'good')}><${Icon} name="link" size=${16} /> Copy link</button>
       </div>
     </div>`}
-    <div class="switch-row"><span class="grow">Colour theme</span><${ThemeDots} /></div>
+    <div class="switch-row"><span class="grow">Color theme</span><${ThemeDots} /></div>
     <div class="switch-row">
       <span class="grow">Sound & vibration</span>
       <${Switch} checked=${prefs.sound} label="Sound" onChange=${(v) => set({ sound: v })} />

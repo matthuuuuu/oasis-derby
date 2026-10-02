@@ -22,14 +22,14 @@ Pick one on the "Set up the race" screen (the host picks it for an online room):
 
 - **Classic**: the Camel Up rulebook race.
 - **Crazier Camels**: everything is the classic race except
-  - the **grey die is not in the pyramid**. It has its own little black-and-white pyramid (where
-    the right palm stands in the classic game) and is rolled **right after every coloured die**, so
-    a crazy camel moves on every pyramid roll. A leg still ends after 5 rolls, so all five coloured
+  - the **gray die is not in the pyramid**. It has its own little black-and-white pyramid (where
+    the right palm stands in the classic game) and is rolled **right after every colored die**, so
+    a crazy camel moves on every pyramid roll. A leg still ends after 5 rolls, so all five colored
     dice come out each leg;
-  - **crazy camels loop**: passing space 1 they come round to 16 and keep going. Racing camels
+  - **crazy camels loop**: passing space 1 they come around to 16 and keep going. Racing camels
     they were carrying that far hop off on space 1. (In the classic game a crazy camel going past
     space 1 crosses the finish line and ends the race.)
-  - if the coloured camel's move ends the race, the grey die isn't rolled.
+  - if the colored camel's move ends the race, the gray die isn't rolled.
 
 The rules live in `js/engine/game.js` (`moveOnBoard`, `rollPyramid`); tests in `tests/crazier.test.mjs`.
 
