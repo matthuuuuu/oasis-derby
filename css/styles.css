@@ -2655,6 +2655,9 @@ button.pile:active:not(:disabled) {
 /* phones: a slightly shorter picture box (still the same on every page), smaller tickets and text,
    so the longest page fits with room to spare */
 @media (max-width: 480px) {
+  .howto-pages {
+    padding-bottom: 2px;
+  }
   .howto-sheet .howto-art {
     height: 106px;
   }

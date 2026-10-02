@@ -56,10 +56,10 @@ const PAGES = [
     </div>`,
     points: [
       html`<b>1. Take a leg ticket</b> for the camel you think will lead this leg. The first pays 5, then 3, 2, 2, so be early!`,
-      html`<b>2. Place your spectator tile</b> on an empty space: cheer +1 or boo −1. Earn 1 coin when a camel lands on it.`,
-      html`<b>3. Roll the pyramid</b>: a random camel moves 1–3 spaces, and you get a pyramid ticket worth 1 coin.`,
+      html`<b>2. Place your spectator tile</b> on an empty space: cheer +1 or boo −1. Earn 1 coin each time a camel lands on it during this leg.`,
+      html`<b>3. Roll the pyramid</b>: a random die pops out and a camel moves 1–3 spaces. You get a pyramid ticket worth 1 coin.`,
       html`<b>4. Bet on the whole race</b>: secretly pick the overall <b>winner</b> or <b>loser</b>.`,
-      html`<b>5. Partner up</b> (6+ players only): share your best ticket with another player.`,
+      html`<b>5. Partner up</b> (6+ players only): choose a partner. At the end of the leg, you each also collect what the other's best ticket pays.`,
     ],
   },
   {
